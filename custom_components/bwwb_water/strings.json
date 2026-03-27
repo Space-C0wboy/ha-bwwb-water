@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Birmingham Water Works Board",
+        "description": "Enter your BWWB web portal credentials (web.bwwb.org).",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to the BWWB portal. Check your network connection.",
+      "invalid_auth": "Invalid username or password. Please verify your credentials at web.bwwb.org.",
+      "unknown": "An unexpected error occurred. Check the Home Assistant logs for details."
+    },
+    "abort": {
+      "already_configured": "This BWWB account is already configured."
+    }
+  }
+}

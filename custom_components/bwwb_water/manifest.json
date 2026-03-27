@@ -1,0 +1,12 @@
+{
+  "domain": "bwwb_water",
+  "name": "Birmingham Water Works Board",
+  "version": "1.1.0",
+  "documentation": "https://github.com/Space-C0wboy/ha-bwwb-water",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@Space-C0wboy"],
+  "iot_class": "cloud_polling",
+  "config_flow": true,
+  "quality_scale": "custom"
+}
