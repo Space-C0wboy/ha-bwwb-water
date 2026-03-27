@@ -66,6 +66,7 @@ The auth service must run on a machine that can reach both:
 **Install dependencies:**
 ```bash
 pip3 install playwright aiohttp
+# Run on the machine where the sidecar will be hosted:
 python3 -m playwright install chromium
 ```
 

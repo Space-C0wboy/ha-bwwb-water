@@ -1,5 +1,6 @@
 {
   "name": "Birmingham Water Works Board",
   "render_readme": true,
-  "filename": "bwwb_water"
+  "filename": "bwwb_water",
+  "homeassistant": "2023.4.0"
 }
