@@ -5,8 +5,11 @@
   "documentation": "https://github.com/Space-C0wboy/ha-bwwb-water",
   "requirements": [],
   "dependencies": [],
-  "codeowners": ["@Space-C0wboy"],
+  "codeowners": [
+    "@Space-C0wboy"
+  ],
   "iot_class": "cloud_polling",
   "config_flow": true,
-  "quality_scale": "custom"
+  "quality_scale": "custom",
+  "icon": "mdi:water-pump"
 }
