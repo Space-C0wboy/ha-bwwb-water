@@ -6,14 +6,15 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from .api import BWWBAPI, BWWBAuthError, BWWBConnectionError
-from .const import DOMAIN, CONF_USERNAME, CONF_PASSWORD
+from .const import DOMAIN, CONF_USERNAME, CONF_PASSWORD, CONF_AUTH_SERVICE_URL, AUTH_SERVICE_URL
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    api = BWWBAPI()
+    auth_url = entry.data.get(CONF_AUTH_SERVICE_URL, AUTH_SERVICE_URL)
+    api = BWWBAPI(auth_service_url=auth_url)
     try:
         success = await api.login(entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD])
         if not success:

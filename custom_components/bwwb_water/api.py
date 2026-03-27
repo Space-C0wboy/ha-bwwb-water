@@ -56,10 +56,11 @@ class BWWBAPI:
     that carries Cloudflare clearance. HA receives pre-parsed JSON data.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, auth_service_url: str | None = None) -> None:
         self._username: str = ""
         self._password: str = ""
         self._last_data: dict[str, Any] = {}
+        self._auth_service_url: str = auth_service_url or AUTH_SERVICE_URL
 
     async def login(self, username: str, password: str) -> bool:
         """Validate credentials by fetching data from the sidecar service."""
@@ -71,19 +72,19 @@ class BWWBAPI:
 
     async def fetch_data(self) -> dict[str, Any]:
         """Fetch all BWWB data via the Pi sidecar service."""
-        _LOGGER.debug("BWWB: requesting data from sidecar at %s", AUTH_SERVICE_URL)
+        _LOGGER.debug("BWWB: requesting data from sidecar at %s", self._auth_service_url)
 
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    AUTH_SERVICE_URL,
+                    self._auth_service_url,
                     json={"username": self._username, "password": self._password},
                     timeout=aiohttp.ClientTimeout(total=120),
                 ) as resp:
                     result = await resp.json(content_type=None)
         except aiohttp.ClientConnectorError as exc:
             raise BWWBConnectionError(
-                f"Cannot reach BWWB sidecar at {AUTH_SERVICE_URL}. "
+                f"Cannot reach BWWB sidecar at {self._auth_service_url}. "
                 f"Is the utility-auth-service running? Error: {exc}"
             ) from exc
         except aiohttp.ClientError as exc:

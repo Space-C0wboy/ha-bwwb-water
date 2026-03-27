@@ -10,7 +10,7 @@ from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.exceptions import HomeAssistantError
 
 from .api import BWWBAPI, BWWBAuthError, BWWBConnectionError
-from .const import DOMAIN, NAME, CONF_USERNAME, CONF_PASSWORD
+from .const import DOMAIN, NAME, CONF_USERNAME, CONF_PASSWORD, CONF_AUTH_SERVICE_URL, AUTH_SERVICE_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +18,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
+        vol.Required(CONF_AUTH_SERVICE_URL, default=AUTH_SERVICE_URL): str,
     }
 )
 
@@ -35,7 +36,7 @@ class BWWBConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             try:
-                api = BWWBAPI()
+                api = BWWBAPI(auth_service_url=user_input[CONF_AUTH_SERVICE_URL])
                 success = await api.login(
                     user_input[CONF_USERNAME],
                     user_input[CONF_PASSWORD],

@@ -6,7 +6,8 @@ NAME = "Birmingham Water Works Board"
 # Pi sidecar service — handles Playwright login + OData fetching
 # Both the SAP SAPUI5 login AND the OData API are behind WAF/Cloudflare,
 # so all data access goes through this service.
-AUTH_SERVICE_URL = "http://localhost:18792/bwwb/data"  # Override during setup
+AUTH_SERVICE_URL = "http://192.168.8.2:18792/bwwb/data"  # Default; configurable during setup
+CONF_AUTH_SERVICE_URL = "auth_service_url"
 
 # Update interval (minutes) — BWWB only updates on billing cycles (~monthly)
 # but we poll hourly in case of manual reads or system updates
