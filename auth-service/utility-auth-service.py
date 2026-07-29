@@ -49,6 +49,8 @@ log = logging.getLogger("utility-auth-service")
 SC_CACHE: dict = {}
 BWWB_CACHE: dict = {}
 BWWB_DATA_CACHE_MINUTES = 60  # Cache full data fetch for 1 hour
+BWWB_LOCK = asyncio.Lock()  # single-flight: serialize Playwright fetches so concurrent HA
+                            # polls never launch N headless Chromiums at once (PID exhaustion)
 
 
 # ─── SOUTHERN COMPANY ────────────────────────────────────────────────────────
@@ -147,6 +149,13 @@ async def _bwwb_fetch(page, url: str) -> dict:
 
 
 async def get_bwwb_data_playwright(username: str, password: str) -> dict:
+    """Single-flight wrapper: serialize concurrent fetches so we never launch N Chromiums
+    at once (concurrent HA-sensor polls would otherwise exhaust the container's PIDs)."""
+    async with BWWB_LOCK:
+        return await _get_bwwb_data_impl(username, password)
+
+
+async def _get_bwwb_data_impl(username: str, password: str) -> dict:
     """
     Full BWWB data fetch via Playwright.
 
@@ -223,46 +232,83 @@ async def get_bwwb_data_playwright(username: str, password: str) -> dict:
             await browser.close()
             raise ValueError(f"BWWB login failed. Final URL: {final_url}")
 
-        # ── Known IDs (fallback) ──
-        device_id = None  # Discovered dynamically from OData
-        contract_id = None  # Discovered dynamically from OData
-        account_id = None  # Discovered dynamically from OData
+        # ── Discover Contract → Account → Device via navigation ──
+        # BWWB's OData no longer allows a top-level GET /Devices — it 500s with
+        # "Key attribute ContractID is not provided to get entity set Device".
+        # Devices must be reached through a Contract, so discover the Contract first.
+        contract_id = None
+        account_id = None
+        device_id = None
 
-        # Try to discover device/contract from Devices endpoint
-        devices_result = await _bwwb_fetch(page, f"{ODATA}/Devices?$format=json")
-        log.info(f"BWWB devices fetch: {devices_result['status']}")
-        if devices_result["status"] == 200:
+        contracts_result = await _bwwb_fetch(page, f"{ODATA}/Contracts?$format=json")
+        log.info(f"BWWB contracts: {contracts_result['status']}")
+        if contracts_result["status"] == 200:
             try:
-                results = json.loads(devices_result["body"]).get("d", {}).get("results", [])
-                if results:
-                    device_id = results[0].get("DeviceID") or device_id
-                    log.info(f"BWWB: discovered device_id={device_id}")
+                _cs = json.loads(contracts_result["body"]).get("d", {}).get("results", [])
+                if _cs:
+                    contract_id = _cs[0].get("ContractID")
+                    account_id = _cs[0].get("AccountID") or _cs[0].get("ContractAccountID")
+                    log.info(f"BWWB: contract_id={contract_id} account_id={account_id}")
             except Exception as e:
-                log.warning(f"BWWB: failed to parse devices: {e}")
+                log.warning(f"BWWB: failed to parse contracts: {e}")
 
-        # ── Fetch meter reading results (actual cumulative reads) ──
-        readings_result = await _bwwb_fetch(
-            page, f"{ODATA}/Devices('{device_id}')/MeterReadingResults?$format=json&$top=10"
-        )
+        if not account_id:
+            accounts_result = await _bwwb_fetch(page, f"{ODATA}/Accounts?$format=json")
+            log.info(f"BWWB accounts: {accounts_result['status']}")
+            if accounts_result["status"] == 200:
+                try:
+                    _as = json.loads(accounts_result["body"]).get("d", {}).get("results", [])
+                    if _as:
+                        account_id = _as[0].get("AccountID")
+                except Exception as e:
+                    log.warning(f"BWWB: failed to parse accounts: {e}")
+
+        # ── Devices — navigated from the Contract ──
+        devices_result = {"status": 0, "body": ""}
+        if contract_id:
+            devices_result = await _bwwb_fetch(page, f"{ODATA}/Contracts('{contract_id}')/Devices?$format=json")
+            log.info(f"BWWB devices (via contract): {devices_result['status']}")
+            if devices_result["status"] == 200:
+                try:
+                    _ds = json.loads(devices_result["body"]).get("d", {}).get("results", [])
+                    if _ds:
+                        device_id = _ds[0].get("DeviceID")
+                        log.info(f"BWWB: discovered device_id={device_id}")
+                except Exception as e:
+                    log.warning(f"BWWB: failed to parse devices: {e}")
+
+        # ── Meter reading results (cumulative reads) — Device single key ──
+        # A Device is keyed by DeviceID alone (Devices('<id>')); the ContractID key
+        # is only required when *listing* the Devices set, which we avoid by navigating
+        # from the Contract above.
+        readings_result = {"status": 0, "body": ""}
+        if device_id:
+            readings_result = await _bwwb_fetch(
+                page,
+                f"{ODATA}/Devices('{device_id}')/MeterReadingResults?$format=json&$top=10",
+            )
         log.info(f"BWWB meter readings: {readings_result['status']}")
 
-        # ── Fetch consumption values ──
-        consumption_result = await _bwwb_fetch(
-            page, f"{ODATA}/Contracts('{contract_id}')/ContractConsumptionValues?$format=json&$top=12"
-        )
+        # ── Consumption values — navigated from the Contract ──
+        consumption_result = {"status": 0, "body": ""}
+        if contract_id:
+            consumption_result = await _bwwb_fetch(
+                page, f"{ODATA}/Contracts('{contract_id}')/ContractConsumptionValues?$format=json&$top=12"
+            )
         log.info(f"BWWB consumption: {consumption_result['status']}")
 
-        # ── Fetch invoices (bill history) ──
-        invoices_result = await _bwwb_fetch(
-            page, f"{ODATA}/Accounts('{account_id}')/Invoices?$format=json&$top=10"
-        )
-        log.info(f"BWWB invoices: {invoices_result['status']}")
-
-        # ── Fetch account balance ──
-        balance_result = await _bwwb_fetch(
-            page, f"{ODATA}/Accounts('{account_id}')/AccountBalance?$format=json"
-        )
-        log.info(f"BWWB balance: {balance_result['status']}")
+        # ── Invoices + balance — navigated from the Account ──
+        invoices_result = {"status": 0, "body": ""}
+        balance_result = {"status": 0, "body": ""}
+        if account_id:
+            invoices_result = await _bwwb_fetch(
+                page, f"{ODATA}/Accounts('{account_id}')/Invoices?$format=json&$top=10"
+            )
+            log.info(f"BWWB invoices: {invoices_result['status']}")
+            balance_result = await _bwwb_fetch(
+                page, f"{ODATA}/Accounts('{account_id}')/AccountBalances?$format=json"
+            )
+            log.info(f"BWWB balance: {balance_result['status']}")
 
         await browser.close()
 
