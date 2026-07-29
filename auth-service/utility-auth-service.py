@@ -247,21 +247,24 @@ async def _get_bwwb_data_impl(username: str, password: str) -> dict:
                 _cs = json.loads(contracts_result["body"]).get("d", {}).get("results", [])
                 if _cs:
                     contract_id = _cs[0].get("ContractID")
-                    account_id = _cs[0].get("AccountID") or _cs[0].get("ContractAccountID")
-                    log.info(f"BWWB: contract_id={contract_id} account_id={account_id}")
+                    log.info(f"BWWB: contract_id={contract_id}")
             except Exception as e:
                 log.warning(f"BWWB: failed to parse contracts: {e}")
 
-        if not account_id:
-            accounts_result = await _bwwb_fetch(page, f"{ODATA}/Accounts?$format=json")
-            log.info(f"BWWB accounts: {accounts_result['status']}")
-            if accounts_result["status"] == 200:
-                try:
-                    _as = json.loads(accounts_result["body"]).get("d", {}).get("results", [])
-                    if _as:
-                        account_id = _as[0].get("AccountID")
-                except Exception as e:
-                    log.warning(f"BWWB: failed to parse accounts: {e}")
+        # AccountID (the key of the Accounts entity set) is NOT the Contract's
+        # ContractAccountID — they are different entities. Billing navs
+        # (Invoices, AccountBalance) hang off Account, so fetch the real
+        # AccountID from the Accounts set rather than reusing ContractAccountID.
+        accounts_result = await _bwwb_fetch(page, f"{ODATA}/Accounts?$format=json&$top=1")
+        log.info(f"BWWB accounts: {accounts_result['status']}")
+        if accounts_result["status"] == 200:
+            try:
+                _as = json.loads(accounts_result["body"]).get("d", {}).get("results", [])
+                if _as:
+                    account_id = _as[0].get("AccountID")
+                    log.info(f"BWWB: account_id={account_id}")
+            except Exception as e:
+                log.warning(f"BWWB: failed to parse accounts: {e}")
 
         # ── Devices — navigated from the Contract ──
         devices_result = {"status": 0, "body": ""}
@@ -306,7 +309,7 @@ async def _get_bwwb_data_impl(username: str, password: str) -> dict:
             )
             log.info(f"BWWB invoices: {invoices_result['status']}")
             balance_result = await _bwwb_fetch(
-                page, f"{ODATA}/Accounts('{account_id}')/AccountBalances?$format=json"
+                page, f"{ODATA}/Accounts('{account_id}')/AccountBalance?$format=json"
             )
             log.info(f"BWWB balance: {balance_result['status']}")
 
