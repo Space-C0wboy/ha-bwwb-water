@@ -13,7 +13,6 @@ import re
 
 from bs4 import BeautifulSoup, Tag
 from pypdf import PdfReader
-from pypdf.errors import PyPdfError
 
 _LOGGER = logging.getLogger(__name__)
 # pypdf warns per embedded font that fontTools is missing; extraction works without it.
@@ -266,7 +265,7 @@ def parse_bill_pdf(data: bytes) -> Bill:
     try:
         reader = PdfReader(BytesIO(data))
         text = "\n".join(page.extract_text() or "" for page in reader.pages)
-    except PyPdfError as err:
+    except Exception as err:  # pypdf raises many non-PyPdfError types on corrupt input
         raise PortalParseError(f"statement is not a readable PDF: {err}") from err
     return parse_bill_text(text)
 

@@ -173,6 +173,15 @@ def test_parse_bill_pdf_rejects_garbage():
         parse_bill_pdf(b"not a pdf")
 
 
+def test_parse_bill_pdf_wraps_non_pypdf_errors(monkeypatch):
+    def boom(*args, **kwargs):
+        raise KeyError("boom")
+
+    monkeypatch.setattr("custom_components.bwwb_water.parsers.PdfReader", boom)
+    with pytest.raises(PortalParseError):
+        parse_bill_pdf(b"%PDF")
+
+
 def test_bill_dict_round_trip():
     bill = parse_bill_text(load_fixture("bill_caw.txt"))
     assert bill_from_dict(bill_to_dict(bill)) == bill
