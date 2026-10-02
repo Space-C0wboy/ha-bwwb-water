@@ -81,6 +81,10 @@ class BWWBConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             account, errors = await self._validate(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
             if account:
+                # A migrated v1 entry is still keyed by username until a setup succeeds;
+                # let reconfigure adopt the account number instead of aborting.
+                if entry.unique_id == entry.data[CONF_USERNAME].lower():
+                    return self.async_update_reload_and_abort(entry, unique_id=account, data_updates=user_input)
                 await self.async_set_unique_id(account)
                 self._abort_if_unique_id_mismatch()
                 return self.async_update_reload_and_abort(entry, data_updates=user_input)

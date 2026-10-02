@@ -92,3 +92,17 @@ async def test_reconfigure_rejects_other_account(hass):
     with patch(VALIDATE, return_value="888800002222"):
         result = await hass.config_entries.flow.async_configure(result["flow_id"], CREDS)
     assert result["reason"] == "unique_id_mismatch"
+
+
+async def test_reconfigure_legacy_entry_adopts_account_number(hass):
+    # A migrated v1 entry keeps its username unique_id until a setup succeeds.
+    entry = MockConfigEntry(domain="bwwb_water", version=2, unique_id="testuser", data=CREDS)
+    entry.add_to_hass(hass)
+    result = await entry.start_reconfigure_flow(hass)
+    with patch(VALIDATE, return_value="999900001111"):
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {"username": "NEWUSER", "password": "new"}
+        )
+    assert result["reason"] == "reconfigure_successful"
+    assert entry.data == {"username": "NEWUSER", "password": "new"}
+    assert entry.unique_id == "999900001111"
