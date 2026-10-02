@@ -193,3 +193,23 @@ def test_real_pages_parse():
     assert summary.account_number == "999900001111"
     assert parse_statement_list(load_fixture("real_statement_history.html"))
     parse_payments(load_fixture("real_payment_summary.html"))
+
+
+def test_parse_bill_lone_comma_reading_is_parse_error():
+    text = load_fixture("bill_caw.txt").replace("939 09/02/26 4", "939 09/02/26 ,")
+    with pytest.raises(PortalParseError):
+        parse_bill_text(text)
+
+
+def test_parse_bill_pdf_wraps_unexpected_text_errors(monkeypatch):
+    class FakeReader:
+        def __init__(self, stream):
+            self.pages = []
+
+    def boom(text):
+        raise ValueError("boom")
+
+    monkeypatch.setattr("custom_components.bwwb_water.parsers.PdfReader", FakeReader)
+    monkeypatch.setattr("custom_components.bwwb_water.parsers.parse_bill_text", boom)
+    with pytest.raises(PortalParseError):
+        parse_bill_pdf(b"%PDF")

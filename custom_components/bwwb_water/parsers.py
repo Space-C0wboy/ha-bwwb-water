@@ -191,7 +191,7 @@ class Bill:
 _LONG_DATE = r"\d{2}/\d{2}/\d{4}"
 _SHORT_DATE = r"\d{2}/\d{2}/\d{2}"
 _MONEY = r"-?\$\s*-?[\d,]+\.\d{2}"
-_NUMBER = r"[\d,]+(?:\.\d+)?"
+_NUMBER = r"\d[\d,]*(?:\.\d+)?"
 _LINE_ITEM = re.compile(r"^(?P<description>.*?\S)\s+(?P<amount>-?[\d,]+\.\d{2})$")
 _BILL_DATE_FIELDS = (
     "invoice_date",
@@ -211,7 +211,10 @@ def _search(pattern: str, text: str, what: str) -> re.Match[str]:
 
 
 def _number(value: str) -> float:
-    return float(value.replace(",", ""))
+    try:
+        return float(value.replace(",", ""))
+    except ValueError:
+        raise PortalParseError(f"not a number: {value!r}") from None
 
 
 def _line_items(text: str, heading: str, total: str) -> tuple[LineItem, ...]:
@@ -267,7 +270,12 @@ def parse_bill_pdf(data: bytes) -> Bill:
         text = "\n".join(page.extract_text() or "" for page in reader.pages)
     except Exception as err:  # pypdf raises many non-PyPdfError types on corrupt input
         raise PortalParseError(f"statement is not a readable PDF: {err}") from err
-    return parse_bill_text(text)
+    try:
+        return parse_bill_text(text)
+    except PortalParseError:
+        raise
+    except Exception as err:  # one odd statement must not fail the whole poll
+        raise PortalParseError(f"statement could not be parsed: {err!r}") from err
 
 
 def bill_to_dict(bill: Bill) -> dict:

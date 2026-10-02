@@ -98,6 +98,9 @@ class CAWCoordinator(DataUpdateCoordinator[CAWData]):
             except (CAWConnectionError, CAWPortalChangedError, PortalParseError) as err:
                 _LOGGER.warning("Skipping statement %s until the next update: %s", key, err)
                 continue
+            except Exception:  # one odd statement must not fail the whole poll
+                _LOGGER.exception("Skipping statement %s until the next update", key)
+                continue
             self._bills[key] = bill
             added = True
 

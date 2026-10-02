@@ -9,6 +9,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.bwwb_water.client import CAWAuthError, CAWConnectionError
 from custom_components.bwwb_water.coordinator import CAWCoordinator
+from custom_components.bwwb_water.parsers import PortalParseError
 
 from .common import BILLS, FakeClient, fake_parse_bill_pdf
 
@@ -98,4 +99,23 @@ async def test_auth_error_triggers_reauth(hass, entry):
 async def test_connection_error_is_update_failed(hass, entry):
     coordinator = CAWCoordinator(hass, entry, FakeClient(summary_error=CAWConnectionError("down")))
     with pytest.raises(UpdateFailed):
+        await coordinator._async_update_data()
+
+
+@pytest.mark.parametrize("error", [PortalParseError("bad statement"), ValueError("unexpected")])
+async def test_unparseable_statement_is_skipped(hass, entry, error):
+    def parse(data: bytes):
+        if data == b"%PDF-2026-08-04":
+            raise error
+        return fake_parse_bill_pdf(data)
+
+    coordinator = CAWCoordinator(hass, entry, FakeClient())
+    with patch(PARSE, side_effect=parse), patch(IMPORT):
+        data = await coordinator._async_update_data()
+    assert data.bills == [BILLS[date(2026, 7, 2)], BILLS[date(2026, 9, 2)]]
+
+
+async def test_statement_auth_error_still_triggers_reauth(hass, entry):
+    coordinator = CAWCoordinator(hass, entry, FakeClient())
+    with patch(PARSE, side_effect=CAWAuthError("no")), patch(IMPORT), pytest.raises(ConfigEntryAuthFailed):
         await coordinator._async_update_data()
