@@ -41,6 +41,8 @@ def build_statistics(
     bills: list[Bill], tz: tzinfo
 ) -> tuple[list[StatisticData], list[StatisticData]]:
     """Rebuild both series from scratch. Same start times every run, so re-imports overwrite."""
+    if not bills:
+        return [], []
     ordered = sorted(bills, key=lambda b: b.present_read_date)
 
     def start(day: date) -> datetime:
@@ -67,6 +69,8 @@ def build_statistics(
 
 @callback
 def async_import_bill_statistics(hass: HomeAssistant, bills: list[Bill]) -> None:
+    if not bills:
+        return
     consumption, cost = build_statistics(bills, dt_util.get_default_time_zone())
     async_add_external_statistics(hass, CONSUMPTION_METADATA, consumption)
     async_add_external_statistics(hass, COST_METADATA, cost)

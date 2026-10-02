@@ -57,3 +57,15 @@ async def test_import_calls_recorder(hass):
         "bwwb_water:water_cost",
     ]
     assert len(add.call_args_list[0].args[2]) == 4
+
+
+def test_build_empty():
+    assert build_statistics([], TZ) == ([], [])
+
+
+async def test_import_empty_does_nothing(hass):
+    with patch(
+        "custom_components.bwwb_water.statistics.async_add_external_statistics"
+    ) as add:
+        async_import_bill_statistics(hass, [])
+    assert add.call_count == 0
