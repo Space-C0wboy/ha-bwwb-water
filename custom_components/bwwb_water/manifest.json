@@ -1,15 +1,14 @@
 {
   "domain": "bwwb_water",
-  "name": "Birmingham Water Works Board",
-  "version": "1.1.0",
+  "name": "Central Alabama Water",
+  "version": "2.0.0",
   "documentation": "https://github.com/Space-C0wboy/ha-bwwb-water",
-  "requirements": [],
-  "dependencies": [],
-  "codeowners": [
-    "@Space-C0wboy"
-  ],
+  "issue_tracker": "https://github.com/Space-C0wboy/ha-bwwb-water/issues",
+  "requirements": ["beautifulsoup4>=4.12", "pypdf>=5.0"],
+  "dependencies": ["recorder"],
+  "codeowners": ["@Space-C0wboy"],
   "iot_class": "cloud_polling",
   "config_flow": true,
-  "quality_scale": "custom",
+  "integration_type": "service",
   "icon": "mdi:water-pump"
 }

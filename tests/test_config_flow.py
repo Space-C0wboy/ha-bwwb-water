@@ -14,6 +14,11 @@ CREDS = {"username": "TESTUSER", "password": "pw"}
 
 
 @pytest.fixture(autouse=True)
+def auto_enable_custom_integrations(recorder_mock, enable_custom_integrations):
+    yield
+
+
+@pytest.fixture(autouse=True)
 def no_setup():
     with patch(SETUP, return_value=True, create=True):
         yield
