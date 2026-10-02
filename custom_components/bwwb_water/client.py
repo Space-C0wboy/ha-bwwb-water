@@ -17,6 +17,7 @@ from .const import BASE_URL, PORTAL_PATH
 
 TIMEOUT = aiohttp.ClientTimeout(total=60)
 LOGGED_IN_MARKER = f"{PORTAL_PATH}/Home/Logout"
+LOGIN_FORM_MARKER = 'name="UserName"'
 
 
 class CAWError(Exception):
@@ -45,7 +46,11 @@ class _Response:
         return self.body.decode("utf-8", errors="replace")
 
     @property
-    def is_logged_out_page(self) -> bool:
+    def is_login_page(self) -> bool:
+        return self.content_type == "text/html" and LOGIN_FORM_MARKER in self.text
+
+    @property
+    def is_unexpected_page(self) -> bool:
         return self.content_type == "text/html" and LOGGED_IN_MARKER not in self.text
 
 
@@ -95,7 +100,7 @@ class CAWClient:
         if LOGGED_IN_MARKER in result.text:
             self._logged_in = True
             return
-        if 'name="UserName"' in result.text:
+        if LOGIN_FORM_MARKER in result.text:
             raise CAWAuthError("the portal rejected the username or password")
         raise CAWPortalChangedError("unexpected page after login")
 
@@ -103,12 +108,14 @@ class CAWClient:
         if not self._logged_in:
             await self.login()
         resp = await self._request("GET", path)
-        if resp.is_logged_out_page:
+        if resp.is_login_page:
             self._logged_in = False
             await self.login()
             resp = await self._request("GET", path)
-            if resp.is_logged_out_page:
+            if resp.is_login_page:
                 raise CAWAuthError("the portal ended the session right after logging in")
+        if resp.is_unexpected_page:
+            raise CAWPortalChangedError(f"{path} returned a page without the logged-in menu")
         return resp
 
     async def get_summary_html(self) -> str:

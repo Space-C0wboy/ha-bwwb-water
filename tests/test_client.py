@@ -121,3 +121,17 @@ async def test_statement_that_is_not_a_pdf(session):
         m.get(PDF_URL, body=b"{}", content_type="application/json")
         with pytest.raises(CAWPortalChangedError):
             await client.get_statement_pdf("999900001111", date(2026, 9, 2))
+
+
+async def test_statement_error_page_is_portal_changed_not_auth(session):
+    client = CAWClient(session, "TESTUSER", "pw")
+    with aioresponses() as m:
+        html(m, "get", BASE, LOGIN)
+        html(m, "post", f"{BASE}/Home/Login", SUMMARY)
+        html(m, "get", PDF_URL, "<html>Error</html>")
+        # Re-login + same error page would follow if the client mistook it for expiry.
+        html(m, "get", BASE, LOGIN)
+        html(m, "post", f"{BASE}/Home/Login", SUMMARY)
+        html(m, "get", PDF_URL, "<html>Error</html>")
+        with pytest.raises(CAWPortalChangedError):
+            await client.get_statement_pdf("999900001111", date(2026, 9, 2))
