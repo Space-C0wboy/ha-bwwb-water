@@ -43,7 +43,13 @@ def build_statistics(
     """Rebuild both series from scratch. Same start times every run, so re-imports overwrite."""
     if not bills:
         return [], []
-    ordered = sorted(bills, key=lambda b: b.present_read_date)
+    # A re-issued bill shares its meter-read date with the original; keep the newest invoice.
+    latest: dict[date, Bill] = {}
+    for bill in bills:
+        kept = latest.get(bill.present_read_date)
+        if kept is None or bill.invoice_date > kept.invoice_date:
+            latest[bill.present_read_date] = bill
+    ordered = sorted(latest.values(), key=lambda b: b.present_read_date)
 
     def start(day: date) -> datetime:
         return datetime.combine(day, time.min, tzinfo=tz)

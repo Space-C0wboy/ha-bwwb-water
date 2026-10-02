@@ -68,7 +68,7 @@ class CAWCoordinator(DataUpdateCoordinator[CAWData]):
         stored = await self._store.async_load() or {}
         try:
             return {key: bill_from_dict(value) for key, value in stored.get("bills", {}).items()}
-        except (KeyError, TypeError, ValueError) as err:
+        except (AttributeError, KeyError, TypeError, ValueError) as err:
             _LOGGER.warning("Discarding unreadable bill cache, statements will be re-downloaded: %s", err)
             return {}
 

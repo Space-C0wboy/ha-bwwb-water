@@ -1,4 +1,5 @@
 """Tests for external statistics building/import."""
+from dataclasses import replace
 from datetime import date, datetime
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
@@ -69,3 +70,12 @@ async def test_import_empty_does_nothing(hass):
     ) as add:
         async_import_bill_statistics(hass, [])
     assert add.call_count == 0
+
+
+def test_reissued_bill_keeps_latest_invoice():
+    original = make_bill(date(2026, 9, 2), 939, 4)
+    reissued = replace(original, invoice_date=date(2026, 9, 10), water_charges=40.00)
+    for bills in ([original, reissued], [reissued, original]):
+        consumption, cost = build_statistics([BILLS[date(2026, 8, 4)], *bills], TZ)
+        assert [r["sum"] for r in consumption] == [0.0, 500.0, 900.0]
+        assert cost[-1]["state"] == round(40.00 + 56.02, 2)

@@ -1,5 +1,5 @@
 """Tests for the config flow."""
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from homeassistant import config_entries
@@ -7,6 +7,7 @@ from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.bwwb_water.client import CAWAuthError, CAWConnectionError, CAWPortalChangedError
+from custom_components.bwwb_water.config_flow import validate_credentials
 
 VALIDATE = "custom_components.bwwb_water.config_flow.validate_credentials"
 SETUP = "custom_components.bwwb_water.async_setup_entry"
@@ -106,3 +107,15 @@ async def test_reconfigure_legacy_entry_adopts_account_number(hass):
     assert result["reason"] == "reconfigure_successful"
     assert entry.data == {"username": "NEWUSER", "password": "new"}
     assert entry.unique_id == "999900001111"
+
+
+async def test_validate_credentials_releases_session(hass):
+    sessions = []
+
+    def client(session, *args):
+        sessions.append(session)
+        return MagicMock(get_summary_html=AsyncMock(side_effect=CAWAuthError()))
+
+    with patch("custom_components.bwwb_water.config_flow.CAWClient", side_effect=client), pytest.raises(CAWAuthError):
+        await validate_credentials(hass, "TESTUSER", "pw")
+    assert sessions[0].closed

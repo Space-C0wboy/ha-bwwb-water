@@ -78,6 +78,15 @@ async def test_corrupt_store_is_discarded_and_redownloaded(hass, entry, hass_sto
     assert len(data.bills) == 3
 
 
+async def test_store_with_wrong_shape_is_discarded(hass, entry, hass_storage):
+    key = f"bwwb_water.{entry.entry_id}"
+    hass_storage[key] = {"version": 1, "minor_version": 1, "key": key, "data": {"bills": []}}
+    client = FakeClient()
+    with patch(PARSE, side_effect=fake_parse_bill_pdf), patch(IMPORT):
+        data = await CAWCoordinator(hass, entry, client)._async_update_data()
+    assert len(data.bills) == 3
+
+
 async def test_failed_pdf_is_skipped_and_retried(hass, entry):
     client = FakeClient(fail_pdfs={date(2026, 8, 4)})
     coordinator = CAWCoordinator(hass, entry, client)

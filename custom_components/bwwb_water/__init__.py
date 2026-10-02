@@ -5,9 +5,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.storage import Store
 
 from .client import CAWClient
-from .const import CONF_AUTH_SERVICE_URL
+from .const import CONF_AUTH_SERVICE_URL, DOMAIN, STORAGE_VERSION
 from .coordinator import CAWConfigEntry, CAWCoordinator
 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
@@ -15,7 +16,8 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 async def async_setup_entry(hass: HomeAssistant, entry: CAWConfigEntry) -> bool:
     client = CAWClient(
-        async_create_clientsession(hass),  # own cookie jar for the portal session
+        # Own cookie jar for the portal session; HA detaches it when the entry unloads.
+        async_create_clientsession(hass),
         entry.data[CONF_USERNAME],
         entry.data[CONF_PASSWORD],
     )
@@ -34,6 +36,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: CAWConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: CAWConfigEntry) -> bool:
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    await Store(hass, STORAGE_VERSION, f"{DOMAIN}.{entry.entry_id}").async_remove()
 
 
 async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

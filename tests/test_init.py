@@ -46,3 +46,31 @@ async def test_unload(hass, patched):
     await hass.async_block_till_done()
     assert await hass.config_entries.async_unload(entry.entry_id)
     assert entry.state is ConfigEntryState.NOT_LOADED
+
+
+async def test_unload_releases_session(hass, patched):
+    sessions = []
+
+    def client(session, *args):
+        sessions.append(session)
+        return FakeClient()
+
+    entry = MockConfigEntry(domain="bwwb_water", version=2, data={"username": "u", "password": "p"})
+    entry.add_to_hass(hass)
+    with patch("custom_components.bwwb_water.CAWClient", side_effect=client):
+        await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    assert not sessions[0].closed
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    assert sessions[0].closed
+
+
+async def test_remove_entry_deletes_bill_cache(hass, patched, hass_storage):
+    entry = MockConfigEntry(domain="bwwb_water", version=2, data={"username": "u", "password": "p"})
+    entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    assert f"bwwb_water.{entry.entry_id}" in hass_storage
+    await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+    assert f"bwwb_water.{entry.entry_id}" not in hass_storage

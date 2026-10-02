@@ -24,8 +24,13 @@ PASSWORD_SCHEMA = vol.Schema({vol.Required(CONF_PASSWORD): str})
 
 async def validate_credentials(hass: HomeAssistant, username: str, password: str) -> str:
     """Log in for real and return the portal account number."""
-    client = CAWClient(async_create_clientsession(hass), username, password)
-    return parse_summary(await client.get_summary_html()).account_number
+    # Not created during entry setup, so HA would only release it at shutdown.
+    session = async_create_clientsession(hass, auto_cleanup=False)
+    try:
+        client = CAWClient(session, username, password)
+        return parse_summary(await client.get_summary_html()).account_number
+    finally:
+        session.detach()
 
 
 class BWWBConfigFlow(ConfigFlow, domain=DOMAIN):
