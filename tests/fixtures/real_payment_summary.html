@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <noscript>
+        <meta http-equiv="REFRESH" content="0; url=/alabama/Home/NoJavascript">
+    </noscript>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>SingleAccountPaymentSummary - alabama</title>
+    <link href="/Core/images/favicon.ico" rel="shortcut icon" type="Image/x-icon" />
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/Content/bootstrap.min.css" />
+    <link href="/Content/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/Content/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="/Content/responsive.dataTables.min.css">
+    <link href="/Content/jquery.mCustomScrollbar.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/dcalendar.picker.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/Content/bootstrap-datetimepicker.min.css" type="text/css" />
+    <link href="/Content/alabama/site.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/COLUMBUS/custom.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/dcalendar.picker.css" rel="stylesheet" />
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-77914530-3', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script src="/bundles/jquery?v=VPMTDJ8C7UaWpRQgQi8StcRhfUXxnzF88abIQl84peg1"></script>
+
+    <script src="/bundles/modernizr?v=bCuvBXqxOGwpGUv_6lK6yu3Cyd-Cm-66JXuTwpJb18c1"></script>
+
+    <script src="/bundles/jqueryui?v=AQmtyMceDvwwIX1BC9pmxemyM7aR4qMuiWu0PouzMZI1"></script>
+
+
+    <script src="/Core/lib/jqgrid/js/jquery.jqGrid.js"></script>
+    <script>
+        var companyName = 'alabama';
+    </script>
+    <script src="/Core/scripts/core.js"></script>
+
+    <script src="/Scripts/TranslatePlaceHolderText.js"></script>
+    <script type="text/javascript">
+        function onTNC() {
+            $.ajax({
+                type: 'GET',
+                url: '/alabama/Account/TermsAndConditionPopUp',
+                cache: false,
+                success: function () {
+                    //alert('hi');
+                    $("#dialog-confirmTNCC").dialog("open");
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: '/alabama/Account/TermsAndConditionPopUp',
+                cache: false,
+                success: function () {
+                }
+            });
+
+            //set min height to body wrap
+            $(".main_container").css("min-height", function () {
+                return $(window).height() - 200;
+            });
+        });
+        $(function () {
+            $("#dialog-confirmTNCC").dialog({
+                autoOpen: false,
+                height: 640,
+                width: 840,
+                modal: true,
+                buttons: {
+                    "Close": function () {
+                        $(this).dialog("close");
+                    }
+                },
+                show: {
+                    effect: "easeOutBounce",
+                    duration: 500
+                },
+                hide: {
+                    effect: "easeOutBounce",
+                    duration: 500
+                }
+            });
+        });
+    </script>
+    <script src="/Scripts/EmailValidation.js" type="text/javascript"></script>
+    
+
+    <script>(function () { var s = document.createElement('script'); var h = document.querySelector('head') || document.body; s.src = 'https://acsbapp.com/apps/app/dist/js/app.js'; s.async = true; s.onload = function () { acsbJS.init({ statementLink: '', footerHtml: '', hideMobile: false, hideTrigger: false, disableBgProcess: false, language: 'en', position: 'left', leadColor: '#146ff8', triggerColor: '#146ff8', triggerRadius: '50%', triggerPositionX: 'left', triggerPositionY: 'bottom', triggerIcon: 'people', triggerSize: 'medium', triggerOffsetX: 20, triggerOffsetY: 20, mobile: { triggerSize: 'small', triggerPositionX: 'left', triggerPositionY: 'bottom', triggerOffsetX: 10, triggerOffsetY: 0, triggerRadius: '50%' } }); }; h.appendChild(s); })();</script>
+</head>
+<body>
+    <div>
+        <div>
+            <div>
+                        <header class="blue_boder">
+                            <div class="header_img">
+                                <img src="/Images/alabama/logo.png" alt="Image" class="img-responsive" />
+                            </div>
+                            <div class="mobile_header_img">
+                                <img src="/Images/alabama/MLogo.png" alt="Image" class="img-responsive" />
+                            </div>
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                            </div>
+                        </header>
+            </div>
+        </div>
+        <div class="main_menu_wrap">
+            <nav class="navbar navbar-default ">
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul id="navigation" class="nav navbar-nav first_nav">
+                        <li class="dropdown">
+                            <!--desktop menu-->
+                            <a href="/alabama/Account/AccountSummary" class=" hidden-xs" tabindex="1" id="tabindexid">My Account</a>
+                            <!--end desktop menu-->
+                            <!--mobile menu-->
+                            <a class="dropdown-toggle hidden-sm hidden-lg hidden-md" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                My Account
+                                <span class="caret"></span>
+                            </a>
+                            <!--end mobile menu-->
+
+                            <ul class="dropdown-menu">
+                                <li><a id="MyAccountOverview" href="/alabama/Account/AccountSummary">Overview</a></li>
+                                    <li> <a id="Preference" href="/alabama/Account/Preference">Preferences</a></li>
+                                <li style="display: none;"><a id="UsageData" href="javascript:void(0);">Usage Data</a> </li>
+                                <li><a id="LinkAccount" href="/alabama/Account/LinkAccounts">Link Accounts</a></li>
+                                <li><a id="Unenroll" href="/alabama/Account/UnenrollAccounts">Unenroll</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                                <!--desktop menu-->
+                                <a href="/alabama/Payment/SingleAccountPaymentSummary" class=" hidden-xs" tabindex="2" id="tabindexid">Payments</a>
+                                <!--end desktop menu-->
+                                <!--mobile menu-->
+                                <a class="dropdown-toggle hidden-sm hidden-lg hidden-md" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    Payments
+                                    <span class="caret"></span>
+                                </a>
+                                <!--end mobile menu-->
+                                <ul class="dropdown-menu" id="tabid">
+                                    <li><a href="/alabama/Payment/SingleAccountPaymentSummary" id="tabindexid">Summary</a></li>
+                                        <li><a href="/alabama/Payment/MultiAccountAutoDraftEnrollment" id="tabindexid">Setup Auto Draft</a> </li>
+                                        <li><a href="/alabama/Payment/MultiAccountSchedulePayment" id="tabindexid">Schedule Payment</a></li>
+                                        <li><a href="/alabama/Payment/CustomerFundingSources" id="tabindexid">Manage Funding Sources</a> </li>
+                                </ul>
+                        </li>
+                        <li class="dropdown">
+                            <!--desktop menu-->
+                            <a href="/alabama/Billing/SingleAccountStatementHistory" class=" hidden-xs" tabindex="3" id="tabindexid">Statements</a>
+                            <!--end desktop menu-->
+                            <!--mobile menu-->
+                            <a id="StatementHistory" class="dropdown-toggle hidden-sm hidden-lg hidden-md" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                Statements
+                                <span class="caret"></span>
+                            </a>
+                            <!--end mobile menu-->
+
+                            <ul class="dropdown-menu">
+                                <li><a id="Sub_StatementHistory" href="/alabama/Billing/SingleAccountStatementHistory">Statement History</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a>Welcome TESTUSER</a></li>
+                        <li><a href="/alabama/Home/MyProfileSummary" tabindex="5" id="tabindexid"><i class="fa fa-cog"></i> Profile / Settings</a></li>
+                        <li><a href="/alabama/Home/BillerContactUs" tabindex="6" id="tabindexid">Contact Us</a></li>
+                        <li><a href="/alabama/Home/Logout" tabindex="7" id="tabindexid"><b>Log Out</b></a></li>
+                    </ul>
+                </div>  <!-- /.navbar-collapse -->
+            </nav>
+        </div>
+
+        <div class="sab_nav_bar">
+
+            <ul id="sub_navigationMyAccount" style="display: none;">
+                <li><a href="/alabama/Account/AccountSummary" tabindex="8" id="tabindexid">Overview</a></li>
+                    <li> <a id="tabindexid" href="/alabama/Account/Preference" tabindex="9">Preferences</a></li>
+                <li><a href="/alabama/Account/LinkAccounts" tabindex="10" id="tabindexid">Link Accounts</a></li>
+                <li><a href="/alabama/Account/UnenrollAccounts" tabindex="11" id="tabindexid">Unenroll</a></li>
+            </ul>
+            <ul id="sub_navigationPayments" style="display: none">
+                <li><a href="/alabama/Payment/SingleAccountPaymentSummary" tabindex="12" id="tabindexid">Summary</a></li>
+                    <li><a href="/alabama/Payment/MultiAccountAutoDraftEnrollment" tabindex="13" id="tabindexid">Setup Auto Draft</a> </li>
+                    <li><a href="/alabama/Payment/MultiAccountSchedulePayment" tabindex="14" id="tabindexid">Schedule Payment</a></li>
+                    <li><a href="/alabama/Payment/CustomerFundingSources" tabindex="15" id="tabindexid">Manage Funding Sources</a> </li>
+            </ul>
+
+            <ul id="sub_navigationStatements" style="display: none;">
+                <li><a href="/alabama/Billing/SingleAccountStatementHistory" tabindex="16" id="tabindexid">Statement History</a></li>
+            </ul>
+        </div>
+    </div>
+    <div>
+        <div>
+            
+            
+
+
+
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-77914530-3', 'auto');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    function CancelAutoDraft(LoginId, PaymentType, ScheduledDate, PaymentDate, Fee, Amount, FundingSource, Status, AccountNumber, PaymentConfirmationNumber, PaymentAmount, InvoiceNumber) {
+        $.ajax({
+            type: 'GET',
+            url: '/alabama/Payment/CancelAutoDraft',
+            cache: false,
+            contentType: 'application/html; charset=utf-8',
+            data: {
+                'AccountNo': AccountNumber, 'PaymentConfirmationNumber': PaymentConfirmationNumber,
+                'PaymentDate': PaymentDate, 'PaymentAmount': PaymentAmount, 'InvoiceNumber': InvoiceNumber
+            },
+            success: function () {
+                var HTML = '';
+                HTML += '<div class="cancle_pop_up">';
+                HTML += '<div class="payment_box">';
+                HTML += '<table class="table">';
+                HTML += '<th><tr><td>Cancel Current Payment</td></tr></th>';
+                HTML += '<tr><td>Account #:</td><td><strong>' + AccountNumber + '</strong></td></tr>';
+                HTML += '<tr><td>Username:</td><td><strong>' + LoginId + '</strong></td></tr>';
+                HTML += '<tr><td>Payment Type:</td><td><strong>' + PaymentType + '</strong></td></tr>';
+                HTML += '<tr><td>Status:</td><td><strong>' + Status + '</strong></td></tr>';
+                HTML += '<tr><td>Confirmation #:</td><td><strong>' + PaymentConfirmationNumber + '</strong></td></tr>';
+                HTML += '<tr><td>Comments*</td></tr>';
+                HTML += '<tr><td colspan="2" width="100%" align="center"><textarea rows="3" col="100" maxlength="500" id="txtCommentAutoDraft"  /></td></tr>';
+                if (PaymentDate == '01/01/1900') {
+                    HTML += '<tr><td colspan="2"><input type="radio" name="cancelAutodraft" id="singleAutodraftchecked" disabled="true"/><strong style="color:#C0C0C0"> &nbsp;Cancel this Auto Draft payment only</strong></td ></tr >';
+                    HTML += '<tr><td colspan="2"><input type="radio" name="cancelAutodraft" checked="true" id="completeAutodraftchecked" /><strong> &nbsp;Cancel Auto Draft enrollment for this account. Any existing Auto Draft payments will also be cancelled.</strong></td></tr>';
+                } else {
+                    HTML += '<tr><td colspan="2"><input type="radio" name="cancelAutodraft" checked="true" id="singleAutodraftchecked" /><strong> &nbsp;Cancel this payment of $' + PaymentAmount + ' due on ' + PaymentDate +
+                        '. Your Auto Draft preference will remain.</strong></td ></tr >';
+                    HTML += '<tr><td colspan="2"><input type="radio" name="cancelAutodraft" id="completeAutodraftchecked" /><strong> &nbsp;Cancel Auto Draft enrollment for this account. Any existing Auto Draft payments will also be cancelled.</strong></td></tr>';
+                }
+                HTML += '<tr><td style="color:red" id="txtAreaWarningAutoDraft" ></td></tr>';
+                HTML += '</table>';
+                HTML += '<div class="wrap-heading"></div>'
+
+                HTML += '<div class="clear"></div>';
+                $("#dialog-confirm").html(HTML);
+                $("#dialog-confirm").dialog("open");
+            }
+        });
+    }
+
+    $(function () {
+        $("#dialog-confirm").dialog({
+            autoOpen: false,
+            resizable: false,
+            width: 500,
+            modal: true,
+            buttons: [{
+                text: "Confirm",
+                class: 'popupbutton',
+                click: function () {
+                    if ($("#txtCommentAutoDraft").val() == '') {
+                        $("#txtAreaWarningAutoDraft").text('Comment required');
+                        return false;
+                    }
+                    else {
+                        AutoDraftStatusCancel();
+                        $(this).dialog("close");
+                    }
+                }
+            },
+            {
+                text: "Cancel",
+                class: 'popupbutton',
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }]
+        });
+    });
+
+    function AutoDraftStatusCancel() {
+        var AccountNum;
+        $.ajax({
+            type: 'GET',
+            url: '/alabama/Payment/AutoDraftStatusCancel',
+            data: {
+                'Comments': $("#txtCommentAutoDraft").val(),
+                'cancelSingleAutodraft': $("#singleAutodraftchecked").prop('checked'),
+                'cancelMultiAutodraft': $("#completeAutodraftchecked").prop('checked')},
+            cache: false,
+            success: function (data) {
+                if (data.length == 0) {
+                    alert('Autodraft cancelled successfully !')
+                    location.reload();
+                } else {
+                    alert(data);
+                    location.reload();
+                }
+            }
+        });
+    }
+
+    //External Payment Change
+    $(function () {
+        $("#dialog-confirm12").dialog({
+            autoOpen: false,
+            resizable: false,
+            width: 600,
+            modal: true,
+            buttons: [{
+                text: "Cancel",
+                class: 'popupbutton',
+                tabindex: "1",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }]
+        });
+    });
+    //External Payment Change
+    function onConfirmationClickForExternalPayment(paymentConfirmationNumber) {
+        $.ajax({
+            type: 'GET',
+            url: '/alabama/Payment/ExternalPaymentConfirmationNumberPartialVew',
+            contentType: 'application/html; charset=utf-8',
+            cache: false,
+            data: { 'confirmationNumber': paymentConfirmationNumber },
+            success: function (result) {
+                $("#dialog-confirm12").html(result);
+                $("#dialog-confirm12").dialog("open");
+            }
+        });
+    }
+
+    ////////////////////////////////////////////for one time payment cancel
+
+    function CancelOneTimePayment(LoginId, PaymentType, ScheduledDate, PaymentDate, Fee, Amount, FundingSource, Status, AccountNumber, PaymentConfirmationNumber, PaymentAmount) {
+        $.ajax({
+            type: 'GET',
+            url: '/alabama/Payment/CancelOneTimePayment',
+            cache: false,
+            data: { 'AccountNo': AccountNumber, 'PaymentConfirmationNumber': PaymentConfirmationNumber },
+            success: function () {
+                $("#dialog-confirm1").html(
+                '<div class="cancle_pop_up">' +
+                '<div class="payment_box">' +
+                '<table class="table">' +
+                '<th><tr><td>Cancel Current Payment</td></tr></th>' +
+                '<tr><td>Account #:</td><td><strong>' + AccountNumber + '</strong></td></tr>' +
+                '<tr><td>Username:</td><td><strong>' + LoginId + '</strong></td></tr>' +
+                '<tr><td>Payment Type:</td><td><strong>' + PaymentType + '</strong></td></tr>' +
+                '<tr><td>Scheduled Date:</td><td><strong>' + ScheduledDate + '</strong></td></tr>' +
+                '<tr><td>Payment Date:</td><td><strong>' + PaymentDate + '</strong></td></tr>' +
+                '<tr><td>Payment Amount:</td><td><strong>' + PaymentAmount + '</strong></td></tr>' +
+                '<tr><td>Fee:</td><td><strong>' + Fee + '</strong></td></tr>' +
+                '<tr><td>Total Amount:</td><td><strong>' + Amount + '</strong></td></tr>' +
+                '<tr><td>Funding Source:</td><td><strong>' + FundingSource + '</strong></td></tr>' +
+                '<tr><td>Status:</td><td><strong>' + Status + '</strong></td></tr>' +
+                '<tr><td>Confirmation #:</td><td><strong>' + PaymentConfirmationNumber + '</strong></td></tr>' +
+                '<tr><td></br></tr></td>' +
+                '<tr><td>Comments*</td></tr>' +
+                '<tr><td colspan="2" width="100%" align="center"><textarea rows="4" col="100" maxlength="500" id="txtComment" /></td></tr>' +
+                '</table>' +
+                '<div id="txtAreaWarning" style="color:red"></div>' +
+                '<div class="clear"></div>' +
+                '<div class="wrap-heading">Are you sure you would like to cancel this payment?</div>' +
+                '</div></div>'
+                );
+                $("#dialog-confirm1").dialog("open");
+            }
+        });
+    }
+
+    $(function () {
+
+        PaymentsDialog('#dialog-confirm1', 'Confirm', 'Cancel', '#txtComment', '#txtAreaWarning', 'Comment is required', OneTimePaymentStatusCancel);
+    });
+
+    function OneTimePaymentStatusCancel() {
+        $.ajax({
+            type: 'GET',
+            url: '/alabama/Payment/OneTimePaymentStatusCancel',
+            cache: false,
+            data: { 'Comments': $("#txtComment").val() },
+            success: function (data) {
+                if (data.length == 0) {
+                    alert('One-Time Payment cancelled successfully !')
+                    location.reload();
+                } else {
+                    alert(data);
+                    location.reload();
+                }
+            }
+        });
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //for confirmation number click..............
+    $(function () {
+        $("#dialog-confirm2").dialog({
+            autoOpen: false,
+            resizable: false,
+            width: 553,
+            title: false,
+            modal: true,
+            buttons: [{
+                text: "Cancel",
+                class: 'popupbutton',
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }]
+        });
+    });
+
+    function onConfirmationClick(paymentConfirmationNumber) {
+        $.ajax({
+            type: 'GET',
+            url: '/alabama/Payment/ConfirmationNumberPartialVew',
+            contentType: 'application/html; charset=utf-8',
+            cache: false,
+            data: { 'confirmationNumber': paymentConfirmationNumber },
+            success: function (result) {
+                $("#dialog-confirm2").html(result);
+                $("#dialog-confirm2").dialog("open");
+            },
+            error: function (xhr) {
+                var msg = xhr.status === 403
+                    ? xhr.statusText
+                    : "An error occurred. Please try again.";
+                $("#dialog-confirm2").html('<p>' + msg + '</p>');
+                $("#dialog-confirm2").dialog("open");
+            }
+        });
+    }
+
+    //Created by Mukesh for get payment details
+    // 25th Feb 2021
+    function onPaymentDetailsClick(paymentConfirmationNumber, selectedPaymentDate, invoiceNumber) {
+        $.ajax({
+            type: 'GET',
+            url: '/alabama/Payment/ConfirmationNumberPartialVew',
+            contentType: 'application/html; charset=utf-8',
+            cache: false,
+            data: {
+                'confirmationNumber': paymentConfirmationNumber,
+                'paymentDate': selectedPaymentDate,
+                'invoiceNumber': invoiceNumber
+            },
+            success: function (result) {
+                $("#dialog-confirm2").html(result);
+                $("#dialog-confirm2").dialog("open");
+            },
+            error: function (xhr) {
+                var msg = xhr.status === 403
+                    ? xhr.statusText
+                    : "An error occurred. Please try again.";
+                $("#dialog-confirm2").html('<p>' + msg + '</p>');
+                $("#dialog-confirm2").dialog("open");
+            }
+        });
+    }
+
+    function CloseBtn() {
+        $("#dialog-confirm2").dialog("close");
+    }
+    function CloseCancelOTPaymentBtn() {
+        $("#dialog-confirm1").dialog("close");
+    }
+    function CloseAutoDraftBtn() {
+        $("#dialog-confirm").dialog("close");
+    }
+</script>
+
+<section class="content_block">
+    <div class="current_pay_tabs">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+
+                        <div class="current_tab">
+                            <ul class="nav nav-tabs current_m_b" role="tablist">
+                                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Current Payments</a></li>
+
+                                <li role="presentation">
+                                    <a id="history-box" href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Payment History</a>
+                                </li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="home">
+
+                                    <div class="current_head_block">
+                                        <div class="row">
+                                            <div class="col-sm-4 col-md-2">
+                                                <h1 class="current_head">Current Payments</h1>
+                                            </div>
+                                            <div class="col-sm-4 col-md-3">
+                                                <div class="tag_name padding-left-12">
+                                                    <p class="single_account"> 999900001111</p>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="payment_summary_table">
+                                                <table id="table_data" class="display nowrap custom-table" cellspacing="0" width="100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Payment Type</th>
+                                                            <th>Scheduled</th>
+                                                            <th>Amount</th>
+                                                            <th>Nickname</th>
+                                                            <th>Funding Source</th>
+                                                            <th>Status</th>
+                                                            <th>Confirmation #</th>
+                                                            <th>Edit</th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                            <span class="auto_draft">Auto Draft </span>
+                                                                    </td>
+
+                                                                        <td>
+                                                                            <span>--</span>
+                                                                        </td>
+
+                                                                        <td>
+                                                                            <span>--</span>
+                                                                        </td>
+                                                                    <td>REDACTED</td>
+                                                                    <td>CARD_4242</td>
+
+                                                                        <td>
+                                                                            <span>Waiting for bill</span>
+                                                                        </td>
+                                                                                                                                            <td>
+                                                                            <span>--</span>
+                                                                        </td>
+                                                                    <td class="cancel">
+                                                                            <span>
+                                                                                <a href="javascript:CancelAutoDraft('TESTUSER', 'AutoDraft', '09/14/2026', '01/01/1900','0.00', '-99.99' ,'CARD_4242' ,'Scheduled', '000000000000','CW00TEST1','-99.99', '')" class="cancel lo-custom-btn">Cancel</a>
+                                                                            </span>
+                                                                    </td>
+                                                                </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="profile">
+                                    <div class="current_head_block padding_t-24">
+                                        <div class="row">
+                                            <div class="col-md-2 col-sm-4">
+                                                <h1 class="current_head">Payment History</h1>
+                                            </div>
+                                            <div class="col-md-3 col-sm-5">
+                                                <div class="tag_name padding-left-12">
+                                                    <p class="single_account">999900001111</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="payment_summary_table">
+                                                <table id="table_data2" class="display nowrap custom-table" cellspacing="0" width="100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Payment Type</th>
+                                                            <th>Payment Date</th>
+                                                            <th>Amount</th>
+                                                            <th>Nickname</th>
+                                                            <th>Funding Source</th>
+                                                            <th>Status</th>
+                                                            <th>Confirmation #</th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                                <tr>
+                                                                    <td>
+                                                                            <span>One-Time</span>
+                                                                    </td>
+                                                                    <td>
+09/22/2026                                                                    </td>
+                                                                    <td>$102.99</td>
+                                                                    <td>REDACTED</td>
+                                                                    <td>CARD_4242</td>
+                                                                    <td>Complete</td>
+                                                                    <td class="blue_text">
+                                                                        
+                                                                            <a href="javascript:onPaymentDetailsClick('CW00TEST1', '09/22/2026', '000000000000');" class="lo-custom-btn">CW00TEST1</a>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                            <span>One-Time</span>
+                                                                    </td>
+                                                                    <td>
+09/16/2026                                                                    </td>
+                                                                    <td>$102.99</td>
+                                                                    <td>REDACTED</td>
+                                                                    <td>CARD_4242</td>
+                                                                    <td>Complete</td>
+                                                                    <td class="blue_text">
+                                                                        
+                                                                            <a href="javascript:onPaymentDetailsClick('CW00TEST1', '09/16/2026', '');" class="lo-custom-btn">CW00TEST1</a>
+                                                                    </td>
+                                                                </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+            </div>
+                <div class="current_head_block padding_t-24">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-5">
+                            <h2 class="current_head">External Payment History</h2>
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <div class="tag_name padding-left-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="payment_summary_table">
+                            <table id="external_payment" class="display nowrap custom-table" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Date</th>
+                                        <th>Payment Mode</th>
+                                        <th>Payment Channel</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Confirmation #</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</section>
+<div id="dialog-confirm" title="Autodraft Payment">
+</div>
+<div id="dialog-confirm1" title="One-Time Payment">
+</div>
+<div id="dialog-confirm2" title="Confirmation Summary">
+</div>
+
+<div id="dialog-confirm12" title="Confirmation Summary" class="hidden_popup">
+</div>
+        </div>
+        <footer>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="footer-img">
+                            
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="/bundles/jqueryval?v=yGLR9IeYR0TiLBS86dsJYhk3HC5p3x8yESo3AgKbLqw1"></script>
+
+    
+
+    <script src="/Scripts/RegExValidation.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="/Scripts/bootstrap.js"></script>
+    <script src="/Scripts/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="/Scripts/jquery.dataTables.min.js"></script>
+    <script src="/Scripts/dataTables.responsive.min.js"></script>
+    <script src="/Scripts/moment-with-locales.js"></script>
+    <script src="/Scripts/bootstrap-datetimepicker.min.js"></script>
+    <script src="/Scripts/jquery-ui.min.js"></script>
+    <script src="/Scripts/custom.js"></script>
+    <script src="/Scripts/dcalendar.picker.js"></script>
+    <script src="/Scripts/idleTimeout.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#table_data').DataTable({
+                "paging": false,
+                "ordering": false,
+                "info": false,
+                responsive: {
+                    details: {
+                        renderer: function (api, rowIdx) {
+                            // Select hidden columns for the given row
+                            var data = api.cells(rowIdx, ':hidden').eq(0).map(function (cell) {
+                                var header = $(api.column(cell.column).header());
+                                return '<tr>' +
+                                    '<td>' +
+                                    header.text() + ':' +
+                                    '</td> ' +
+                                    '<td>' +
+                                    api.cell(cell).data() +
+                                    '</td>' +
+                                    '</tr>';
+                            }).toArray().join('');
+
+                            return data ?
+                                $('<table/>').append(data) :
+                                false;
+                        }
+                    }
+                }
+            });
+
+            $('#external_payment').DataTable({
+                "paging": false,
+                "ordering": false,
+                "info": false,
+                responsive: {
+                    details: {
+                        renderer: function (api, rowIdx) {
+                            // Select hidden columns for the given row
+                            var data = api.cells(rowIdx, ':hidden').eq(0).map(function (cell) {
+                                var header = $(api.column(cell.column).header());
+                                return '<tr>' +
+                                    '<td>' +
+                                    header.text() + ':' +
+                                    '</td> ' +
+                                    '<td>' +
+                                    api.cell(cell).data() +
+                                    '</td>' +
+                                    '</tr>';
+                            }).toArray().join('');
+
+                            return data ?
+                                $('<table/>').append(data) :
+                                false;
+                        }
+                    }
+                }
+            });
+
+            function drah() {
+                if (!$.fn.DataTable.isDataTable('#table_data2')) {
+                    $('#table_data2').DataTable({
+                        "paging": false,
+                        "ordering": false,
+                        "info": false,
+                        responsive: {
+                            details: {
+                                renderer: function (api, rowIdx) {
+                                    // Select hidden columns for the given row
+                                    var data = api.cells(rowIdx, ':hidden').eq(0).map(function (cell) {
+                                        var header = $(api.column(cell.column).header());
+
+                                        return '<tr>' +
+                                            '<td>' +
+                                            header.text() + ':' +
+                                            '</td> ' +
+                                            '<td>' +
+                                            api.cell(cell).data() +
+                                            '</td>' +
+                                            '</tr>';
+                                    }).toArray().join('');
+
+                                    return data ?
+                                        $('<table/>').append(data) :
+                                        false;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            $("#history-box").click(function () {
+                setTimeout(
+                    drah, 0
+                )
+            })
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            try {
+                var settngs = $.data($('form')[0], 'validator').settings;
+                settngs.onkeyup = false;
+                settngs.onfocusout = false;
+                settngs.onsubmit = true;
+            }
+            catch (exception) {
+            };
+        });
+
+
+        $(document).ready(function () {
+            // store url for current page as global variable
+            current_page = document.location.href
+            // apply selected states depending on current page
+            if (current_page.match(/BillerContactUs/)) {
+            }
+            else if (current_page.match(/AccountSummary/) || current_page.match(/ThreeAccountSummary/) || current_page.match(/MultiAccountSummary/)) {
+                $("ul#navigation li:eq(0) a").addClass('selected');
+                $("ul#sub_navigationMyAccount li:eq(0) a").addClass('selected');
+                $("ul#sub_navigationMyAccount").addClass('showsubmenu');
+            }
+            else if (current_page.match(/Preference/)) {
+                $("ul#navigation li:eq(0) a").addClass('selected');
+                $("ul#sub_navigationMyAccount li:eq(1) a").addClass('selected');
+                $("ul#sub_navigationMyAccount").addClass('showsubmenu');
+                $(".footer").addClass('footer_non_bg');
+            }
+            else if (current_page.match(/UnenrollNow/) || current_page.match(/UnenrollConfirm/) || current_page.match(/UnenrollAccounts/) || current_page.match(/UnEnrollNow/)) {
+                $("ul#navigation li:eq(0) a").addClass('selected');
+                $("ul#sub_navigationMyAccount li:eq(3) a").addClass('selected');
+                $("ul#sub_navigationMyAccount").addClass('showsubmenu');
+            }
+            else if (current_page.match(/LinkAccounts/)) {
+                $("ul#navigation li:eq(0) a").addClass('selected');
+                $("ul#sub_navigationMyAccount li:eq(2) a").addClass('selected');
+                $("ul#sub_navigationMyAccount").addClass('showsubmenu');
+            }
+            else if (current_page.match(/LinkYourAccount/) || current_page.match(/NewTag/) || current_page.match(/EditTag/) || current_page.match(/UnLinkAccount/) || current_page.match(/VerifyUser/) || current_page.match(/AccountThanks/)) {
+                $("ul#navigation li:eq(0) a").addClass('selected');
+                $("ul#sub_navigationMyAccount li:eq(2) a").addClass('selected');
+                $("ul#sub_navigationMyAccount").addClass('showsubmenu');
+            }
+            else if (current_page.match(/ConfirmOneTimePayment/) || current_page.match(/PaymentThanks/) || current_page.match(/ScheduleOneTimePayment/) || current_page.match(/InitiateOneTimePayment/)) {
+                $("ul#navigation li:eq(6) a").addClass('selected');
+                $("ul#sub_navigationPayments li:eq(2) a").addClass('selected');
+                $("ul#sub_navigationPayments").addClass('showsubmenu');
+            }
+            else if (current_page.match(/PaymentAutoDraftEnrollment/) || current_page.match(/ConfirmAutoDraftEnrollment/) || current_page.match(/ThanksAutoDraftEnrollment/) || current_page.match(/SingleACPaymentAutoDraftEnrollment/)) {
+                $("ul#navigation li:eq(6) a").addClass('selected');
+                $("ul#sub_navigationPayments li:eq(1) a").addClass('selected');
+                $("ul#sub_navigationPayments").addClass('showsubmenu');
+            }
+            else if (current_page.match(/MultiAccountAutoDraftEnrollment/) || current_page.match(/ConfirmMultiAccountAutoDraft/) || current_page.match(/ThanksMultiAccountAutoDraft/)) {
+                $("ul#navigation li:eq(6) a").addClass('selected');
+                $("ul#sub_navigationPayments li:eq(1) a").addClass('selected');
+                $("ul#sub_navigationPayments").addClass('showsubmenu');
+            }
+            else if (current_page.match(/CustomerFundingSources/) || current_page.match(/AddACHCardDetails/) || current_page.match(/AddCreditCardDetails/) || current_page.match(/DeleteCreditCardInformation/) || current_page.match(/DeleteCreditCardConfirm/) || current_page.match(/DeleteFundingSource/) || current_page.match(/AddPaymentusCardStep2/)) {
+                $("ul#navigation li:eq(6) a").addClass('selected');
+                $("ul#sub_navigationPayments li:eq(3) a").addClass('selected');
+                $("ul#sub_navigationPayments").addClass('showsubmenu');
+            }
+            else if (current_page.match(/MultiAccountSchedulePayment/) || current_page.match(/ConfirmMultiAccountPayment/) || current_page.match(/MultiAccountPaymentThankYou/)) {
+                $("ul#navigation li:eq(6) a").addClass('selected');
+                $("ul#sub_navigationPayments li:eq(2) a").addClass('selected');
+                $("ul#sub_navigationPayments").addClass('showsubmenu');
+            }
+            else if (current_page.match(/MultiAccountPaymentSummary/) || current_page.match(/SingleAccountPaymentSummary/)) {
+                $("ul#navigation li:eq(6) a").addClass('selected');
+                $("ul#sub_navigationPayments li:eq(0) a").addClass('selected');
+                $("ul#sub_navigationPayments").addClass('showsubmenu');
+            }
+            else if (current_page.match(/SingleAccountStatementHistory/) || current_page.match(/MultiAccountStatementHistory/) || current_page.match(/ThreeAccountStatementHistory/)) {
+                $("ul#navigation li:eq(11) a").addClass('selected');
+                $("ul#sub_navigationStatements li:eq(0) a").addClass('selected');
+                $("ul#sub_navigationStatements").addClass('showsubmenu');
+            }
+            else if (current_page.match(/AdditionDocuments/)) {
+                $("ul#navigation li:eq(11) a").addClass('selected');
+                $("ul#sub_navigationStatements li:eq(1) a").addClass('selected');
+                $("ul#sub_navigationStatements").addClass('showsubmenu');
+            }
+            else if (current_page.match(/MyProfileSummary/)) {
+                $("ul#navigation").addClass('hidemenu');
+                $("ul#navigationProfileSummary").addClass('showsubmenu');
+                $("ul#navigationProfileSummary li:eq(0) a").addClass('selected');
+            }
+            else if (current_page.match(/ManageFundingSources/) || current_page.match(/ACHPaymentOption/) || current_page.match(/ManageFundingThanks/)) {
+                $("ul#sub_navigationPayments li:eq(3) a").addClass('selected');
+                $("ul#sub_navigationPayments").addClass('showsubmenu');
+
+            }
+            else { // don't mark any nav links as selected
+                $("ul#navigation li:eq(5) a").addClass('selected');
+                $("ul#sub_navigation li:eq(5) a").addClass('selected');
+            };
+        });
+    </script>
+
+
+
+<div id="dialog" title="Your session is about to expire!" style="display:none;">
+    <p>
+        <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 50px 0;"></span>
+        You will be logged off in <span id="dialog-countdown" style="font-weight: bold"></span>&nbsp;seconds.
+
+    </p>
+
+    <p>Do you want to continue your session?</p>
+</div>
+
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-77914530-3', 'auto');
+    ga('send', 'pageview');
+</script>
+<script src="/bundles/idleTimeout?v=VR7uv6Ys0iKa-EJujBRSmeQCirXCayJEEGcVLp50HVU1"></script>
+
+<script type="text/javascript">
+    // setup the dialog
+    $("#dialog").dialog({
+        autoOpen: false,
+        modal: true,
+        width: 400,
+        height: 200,
+        closeOnEscape: false,
+        draggable: false,
+        resizable: false,
+        buttons: {
+            'Yes, Keep Working': function () {
+                $(this).dialog('close');
+            },
+            'No, Logoff': function () {
+                // fire whatever the configured onTimeout callback is.
+                // using .call(this) keeps the default behavior of "this" being the warning
+                // element (the dialog in this case) inside the callback.
+                $.idleTimeout.options.onTimeout.call(this);
+            }
+        }
+    });
+
+    var $countdown = $("#dialog-countdown");
+
+    // start the idle timer plugin
+    $.idleTimeout('#dialog', 'div.ui-dialog-buttonpane button:first', {
+        failedRequests: 1,
+        idleAfter: 600,
+        keepAliveURL: '/alabama/Home/IsUserValid',
+            serverResponseEquals: 'OK',
+            onTimeout: function () {
+                window.location = '/alabama/Home/Logout';
+            },
+            onIdle: function () {
+                $(this).dialog("open");
+            },
+            onCountdown: function (counter) {
+                $countdown.html(counter); // update the counter
+            }
+           
+        });
+</script>
+
+
+</body>
+</html>
+<div id="dialog-confirmTNCC" style="width: 800px; margin-left: 50px; display:none;">
+    <h4>Terms And Conditions</h4>
+    <div>
+        By using our Services, you are agreeing to these terms. Please read them carefully.
+    </div>
+    <br />
+    <p class="pad_tr_left">
+    </p>
+    <div class="term-condition-text">
+    </div>
+</div>
+
+
+
