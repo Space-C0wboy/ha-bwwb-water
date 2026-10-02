@@ -5,14 +5,19 @@ each one can be tested against fixture files.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import date, datetime
+from io import BytesIO
 import logging
 import re
 
 from bs4 import BeautifulSoup, Tag
+from pypdf import PdfReader
+from pypdf.errors import PyPdfError
 
 _LOGGER = logging.getLogger(__name__)
+# pypdf warns per embedded font that fontTools is missing; extraction works without it.
+logging.getLogger("pypdf").setLevel(logging.ERROR)
 
 
 class PortalParseError(Exception):
@@ -157,3 +162,126 @@ def parse_payments(html: str) -> Payments:
         )
     completed.sort(key=lambda p: p.payment_date, reverse=True)
     return Payments(scheduled=tuple(scheduled), completed=tuple(completed))
+
+
+@dataclass(frozen=True)
+class LineItem:
+    description: str
+    amount: float
+
+
+@dataclass(frozen=True)
+class Bill:
+    invoice_date: date
+    due_date: date
+    total_due: float
+    period_start: date
+    period_end: date
+    meter_number: str
+    previous_read: float  # CCF, cumulative
+    previous_read_date: date
+    present_read: float  # CCF, cumulative
+    present_read_date: date
+    consumption: float  # CCF, the bill's CONS column
+    water_charges: float
+    sewer_charges: float
+    water_line_items: tuple[LineItem, ...]
+    sewer_line_items: tuple[LineItem, ...]
+
+
+_LONG_DATE = r"\d{2}/\d{2}/\d{4}"
+_SHORT_DATE = r"\d{2}/\d{2}/\d{2}"
+_MONEY = r"-?\$\s*-?[\d,]+\.\d{2}"
+_NUMBER = r"[\d,]+(?:\.\d+)?"
+_LINE_ITEM = re.compile(r"^(?P<description>.*?\S)\s+(?P<amount>-?[\d,]+\.\d{2})$")
+_BILL_DATE_FIELDS = (
+    "invoice_date",
+    "due_date",
+    "period_start",
+    "period_end",
+    "previous_read_date",
+    "present_read_date",
+)
+
+
+def _search(pattern: str, text: str, what: str) -> re.Match[str]:
+    match = re.search(pattern, text)
+    if match is None:
+        raise PortalParseError(f"statement: {what} not found")
+    return match
+
+
+def _number(value: str) -> float:
+    return float(value.replace(",", ""))
+
+
+def _line_items(text: str, heading: str, total: str) -> tuple[LineItem, ...]:
+    section = re.search(rf"{heading}(.*?){re.escape(total)}", text, re.S)
+    if section is None:
+        raise PortalParseError(f"statement: section {heading!r} not found")
+    items = []
+    for line in section.group(1).splitlines():
+        line = line.strip()
+        if not line or re.fullmatch(rf"{_SHORT_DATE}\s*-\s*{_SHORT_DATE}", line):
+            continue
+        match = _LINE_ITEM.match(line)
+        if match:
+            items.append(LineItem(match["description"], _money(match["amount"])))
+    return tuple(items)
+
+
+def parse_bill_text(text: str) -> Bill:
+    invoice = _search(rf"INVOICE DATE:\s*({_LONG_DATE})", text, "invoice date")
+    period = _search(rf"SERVICE PERIOD:\s*({_LONG_DATE})\s*-\s*({_LONG_DATE})", text, "service period")
+    due = _search(rf"TOTAL AMOUNT DUE by\s*({_LONG_DATE})\s*({_MONEY})", text, "amount due")
+    meter = _search(
+        rf"CONS\s+(\S+)\s+\S+\s+({_NUMBER})\s+({_SHORT_DATE})\s+({_NUMBER})\s+({_SHORT_DATE})\s+({_NUMBER})",
+        text,
+        "meter readings",
+    )
+    water = _search(rf"TOTAL Water Charges\s*({_MONEY})", text, "water charges")
+    sewer = _search(rf"TOTAL Sewer Charges\s*({_MONEY})", text, "sewer charges")
+    return Bill(
+        invoice_date=_date(invoice[1]),
+        due_date=_date(due[1]),
+        total_due=_money(due[2]),
+        period_start=_date(period[1]),
+        period_end=_date(period[2]),
+        meter_number=meter[1],
+        previous_read=_number(meter[2]),
+        previous_read_date=_date(meter[3]),
+        present_read=_number(meter[4]),
+        present_read_date=_date(meter[5]),
+        consumption=_number(meter[6]),
+        water_charges=_money(water[1]),
+        sewer_charges=_money(sewer[1]),
+        # Headings are upper case ("CAW WATER CHARGES" / "BWWB WATER CHARGES");
+        # the TOTAL lines are mixed case, so the case-sensitive match can't confuse them.
+        water_line_items=_line_items(text, r"[A-Z]+ WATER CHARGES", "TOTAL Water Charges"),
+        sewer_line_items=_line_items(text, r"[A-Z ]+ SEWER CHARGES", "TOTAL Sewer Charges"),
+    )
+
+
+def parse_bill_pdf(data: bytes) -> Bill:
+    try:
+        reader = PdfReader(BytesIO(data))
+        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    except PyPdfError as err:
+        raise PortalParseError(f"statement is not a readable PDF: {err}") from err
+    return parse_bill_text(text)
+
+
+def bill_to_dict(bill: Bill) -> dict:
+    data = asdict(bill)
+    for name in _BILL_DATE_FIELDS:
+        data[name] = data[name].isoformat()
+    return data
+
+
+def bill_from_dict(data: dict) -> Bill:
+    values = dict(data)
+    for name in _BILL_DATE_FIELDS:
+        values[name] = date.fromisoformat(values[name])
+    values["water_line_items"] = tuple(LineItem(**item) for item in data["water_line_items"])
+    values["sewer_line_items"] = tuple(LineItem(**item) for item in data["sewer_line_items"])
+    return Bill(**values)
