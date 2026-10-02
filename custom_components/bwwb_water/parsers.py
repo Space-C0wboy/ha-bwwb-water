@@ -37,7 +37,10 @@ def _money(value: str) -> float:
     cleaned = re.sub(r"[^\d.\-]", "", value)
     if cleaned in ("", "-", "."):
         raise PortalParseError(f"not a money value: {value!r}")
-    return float(cleaned)
+    try:
+        return float(cleaned)
+    except ValueError:
+        raise PortalParseError(f"not a money value: {value!r}") from None
 
 
 def _date(value: str) -> date:
@@ -86,3 +89,71 @@ def parse_statement_list(html: str) -> list[StatementRef]:
             continue  # DataTables "No data available" placeholder row
         refs.append(StatementRef(issue_date=_date(cells[0]), amount=_money(cells[1]), due_date=_date(cells[2])))
     return refs
+
+
+@dataclass(frozen=True)
+class ScheduledPayment:
+    type: str
+    scheduled: str | None
+    amount: float | None
+    funding_source: str
+    status: str
+
+
+@dataclass(frozen=True)
+class CompletedPayment:
+    type: str
+    payment_date: date
+    amount: float
+    funding_source: str
+    status: str
+    confirmation: str | None
+
+
+@dataclass(frozen=True)
+class Payments:
+    scheduled: tuple[ScheduledPayment, ...]
+    completed: tuple[CompletedPayment, ...]  # newest first
+
+
+def _optional(value: str) -> str | None:
+    return None if value in ("", "--") else value
+
+
+def parse_payments(html: str) -> Payments:
+    scheduled_table = _table(html, "table_data", "scheduled payments")
+    completed_table = _table(html, "table_data2", "payment history")
+
+    scheduled = []
+    for row in scheduled_table.select("tbody tr"):
+        cells = _cells(row)
+        if len(cells) < 7:
+            continue
+        amount = _optional(cells[2])
+        scheduled.append(
+            ScheduledPayment(
+                type=cells[0],
+                scheduled=_optional(cells[1]),
+                amount=_money(amount) if amount else None,
+                funding_source=cells[4],
+                status=cells[5],
+            )
+        )
+
+    completed = []
+    for row in completed_table.select("tbody tr"):
+        cells = _cells(row)
+        if len(cells) < 7:
+            continue
+        completed.append(
+            CompletedPayment(
+                type=cells[0],
+                payment_date=_date(cells[1]),
+                amount=_money(cells[2]),
+                funding_source=cells[4],
+                status=cells[5],
+                confirmation=_optional(cells[6]),
+            )
+        )
+    completed.sort(key=lambda p: p.payment_date, reverse=True)
+    return Payments(scheduled=tuple(scheduled), completed=tuple(completed))
