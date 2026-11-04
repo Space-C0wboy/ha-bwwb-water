@@ -1,4 +1,4 @@
 pytest-homeassistant-custom-component==0.13.368
 beautifulsoup4==4.13.3
-pypdf==6.19.0
+pypdf==6.21.4
 aioresponses==0.7.9
