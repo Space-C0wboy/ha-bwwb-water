@@ -45,7 +45,7 @@ class BWWBConfigFlow(ConfigFlow, domain=DOMAIN):
             return None, {"base": "invalid_auth"}
         except CAWConnectionError:
             return None, {"base": "cannot_connect"}
-        except CAWPortalChangedError, PortalParseError:
+        except (CAWPortalChangedError, PortalParseError):
             return None, {"base": "portal_changed"}
         except Exception:
             _LOGGER.exception("Unexpected error validating Central Alabama Water credentials")
