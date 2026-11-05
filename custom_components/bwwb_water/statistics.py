@@ -1,4 +1,5 @@
 """External statistics for the Energy dashboard, one point per bill at its meter-read date."""
+
 from __future__ import annotations
 
 from datetime import date, datetime, time, tzinfo
@@ -56,7 +57,9 @@ def build_statistics(
 
     first = ordered[0]
     consumption = [
-        StatisticData(start=start(first.previous_read_date), state=first.previous_read * CCF_TO_FT3, sum=0.0)
+        StatisticData(
+            start=start(first.previous_read_date), state=first.previous_read * CCF_TO_FT3, sum=0.0
+        )
     ]
     cost = [StatisticData(start=start(first.previous_read_date), state=0.0, sum=0.0)]
     volume_total = 0.0
@@ -67,9 +70,17 @@ def build_statistics(
         bill_cost = bill.water_charges + bill.sewer_charges
         money_total = round(money_total + bill_cost, 2)
         consumption.append(
-            StatisticData(start=start(bill.present_read_date), state=bill.present_read * CCF_TO_FT3, sum=volume_total)
+            StatisticData(
+                start=start(bill.present_read_date),
+                state=bill.present_read * CCF_TO_FT3,
+                sum=volume_total,
+            )
         )
-        cost.append(StatisticData(start=start(bill.present_read_date), state=round(bill_cost, 2), sum=money_total))
+        cost.append(
+            StatisticData(
+                start=start(bill.present_read_date), state=round(bill_cost, 2), sum=money_total
+            )
+        )
     return consumption, cost
 
 

@@ -1,4 +1,5 @@
 """Tests for the data update coordinator."""
+
 from datetime import date
 from unittest.mock import patch
 
@@ -37,7 +38,9 @@ async def test_first_update_backfills_all_statements(hass, entry, hass_storage):
     imp.assert_called_once()
     await hass.async_block_till_done()
     assert set(hass_storage[f"bwwb_water.{entry.entry_id}"]["data"]["bills"]) == {
-        "2026-07-02", "2026-08-04", "2026-09-02",
+        "2026-07-02",
+        "2026-08-04",
+        "2026-09-02",
     }
 
 
@@ -126,5 +129,9 @@ async def test_unparseable_statement_is_skipped(hass, entry, error):
 
 async def test_statement_auth_error_still_triggers_reauth(hass, entry):
     coordinator = CAWCoordinator(hass, entry, FakeClient())
-    with patch(PARSE, side_effect=CAWAuthError("no")), patch(IMPORT), pytest.raises(ConfigEntryAuthFailed):
+    with (
+        patch(PARSE, side_effect=CAWAuthError("no")),
+        patch(IMPORT),
+        pytest.raises(ConfigEntryAuthFailed),
+    ):
         await coordinator._async_update_data()

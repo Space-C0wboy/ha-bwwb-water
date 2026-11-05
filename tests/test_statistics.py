@@ -1,4 +1,5 @@
 """Tests for external statistics building/import."""
+
 from dataclasses import replace
 from datetime import date, datetime
 from unittest.mock import patch
@@ -39,7 +40,10 @@ def test_cost_rows_sum_water_plus_sewer():
 
 
 def test_sum_uses_cons_not_read_difference():
-    bills = [make_bill(date(2026, 7, 2), 930, 5), make_bill(date(2026, 8, 4), 3, 3)]  # meter swapped
+    bills = [
+        make_bill(date(2026, 7, 2), 930, 5),
+        make_bill(date(2026, 8, 4), 3, 3),
+    ]  # meter swapped
     consumption, _ = build_statistics(bills, TZ)
     assert [r["sum"] for r in consumption] == [0.0, 500.0, 800.0]
 
@@ -49,9 +53,7 @@ def test_build_is_deterministic():
 
 
 async def test_import_calls_recorder(hass):
-    with patch(
-        "custom_components.bwwb_water.statistics.async_add_external_statistics"
-    ) as add:
+    with patch("custom_components.bwwb_water.statistics.async_add_external_statistics") as add:
         async_import_bill_statistics(hass, list(BILLS.values()))
     assert [c.args[1]["statistic_id"] for c in add.call_args_list] == [
         "bwwb_water:water_consumption",
@@ -65,9 +67,7 @@ def test_build_empty():
 
 
 async def test_import_empty_does_nothing(hass):
-    with patch(
-        "custom_components.bwwb_water.statistics.async_add_external_statistics"
-    ) as add:
+    with patch("custom_components.bwwb_water.statistics.async_add_external_statistics") as add:
         async_import_bill_statistics(hass, [])
     assert add.call_count == 0
 

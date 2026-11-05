@@ -4,6 +4,7 @@ HTTP only, no parsing beyond finding the login form token. The portal is a
 server-rendered ASP.NET MVC site: GET the login page for the anti-forgery
 token + cookie, POST the form, then GET pages with the session cookie.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -133,5 +134,7 @@ class CAWClient:
             f"{PORTAL_PATH}/Account/ViewStatement?AccountNumber={account_number}&StatementDate={stamp}"
         )
         if resp.content_type != "application/pdf":
-            raise CAWPortalChangedError(f"statement {statement_date} came back as {resp.content_type}")
+            raise CAWPortalChangedError(
+                f"statement {statement_date} came back as {resp.content_type}"
+            )
         return resp.body

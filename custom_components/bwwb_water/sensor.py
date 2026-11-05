@@ -1,4 +1,5 @@
 """Sensors for Central Alabama Water."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -44,7 +45,10 @@ def _previous(fn: Callable[[Bill], Any]) -> Callable[[CAWData], Any]:
 def _period(bill: Bill | None) -> dict[str, Any]:
     if bill is None:
         return {}
-    return {"period_start": bill.period_start.isoformat(), "period_end": bill.period_end.isoformat()}
+    return {
+        "period_start": bill.period_start.isoformat(),
+        "period_end": bill.period_end.isoformat(),
+    }
 
 
 def _charges_attrs(items_of: Callable[[Bill], tuple]) -> Callable[[CAWData], dict[str, Any]]:
@@ -53,7 +57,9 @@ def _charges_attrs(items_of: Callable[[Bill], tuple]) -> Callable[[CAWData], dic
         if bill is None:
             return {}
         return {
-            "line_items": [{"description": i.description, "amount": i.amount} for i in items_of(bill)],
+            "line_items": [
+                {"description": i.description, "amount": i.amount} for i in items_of(bill)
+            ],
             "service_period": f"{bill.period_start.isoformat()} - {bill.period_end.isoformat()}",
         }
 
@@ -68,7 +74,12 @@ def _scheduled_attrs(data: CAWData) -> dict[str, Any]:
     attrs: dict[str, Any] = {}
     if data.payments.scheduled:
         nxt = data.payments.scheduled[0]
-        attrs.update(type=nxt.type, scheduled=nxt.scheduled, amount=nxt.amount, funding_source=nxt.funding_source)
+        attrs.update(
+            type=nxt.type,
+            scheduled=nxt.scheduled,
+            amount=nxt.amount,
+            funding_source=nxt.funding_source,
+        )
     if data.payments.completed:
         last = data.payments.completed[0]
         attrs.update(
@@ -111,7 +122,9 @@ SENSORS: tuple[CAWSensorDescription, ...] = (
         icon="mdi:calendar-check",
         device_class=SensorDeviceClass.DATE,
         value_fn=_latest(lambda b: b.present_read_date),
-        attrs_fn=lambda d: {"previous_read_date": d.latest.previous_read_date.isoformat()} if d.latest else {},
+        attrs_fn=lambda d: (
+            {"previous_read_date": d.latest.previous_read_date.isoformat()} if d.latest else {}
+        ),
     ),
     CAWSensorDescription(
         key="current_period_ccf",
@@ -152,7 +165,10 @@ SENSORS: tuple[CAWSensorDescription, ...] = (
         native_unit_of_measurement="USD",
         value_fn=_latest(lambda b: b.total_due),
         attrs_fn=lambda d: (
-            {"bill_date": d.latest.invoice_date.isoformat(), "due_date": d.latest.due_date.isoformat()}
+            {
+                "bill_date": d.latest.invoice_date.isoformat(),
+                "due_date": d.latest.due_date.isoformat(),
+            }
             if d.latest
             else {}
         ),
@@ -196,7 +212,9 @@ SENSORS: tuple[CAWSensorDescription, ...] = (
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda d: days_until_due(d, dt_util.now().date()),
         attrs_fn=lambda d: (
-            {"due_date": d.latest.due_date.isoformat(), "paid": d.summary.balance <= 0} if d.latest else {}
+            {"due_date": d.latest.due_date.isoformat(), "paid": d.summary.balance <= 0}
+            if d.latest
+            else {}
         ),
     ),
 )

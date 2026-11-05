@@ -1,9 +1,10 @@
 """Tests for the portal HTTP client."""
+
 from datetime import date
 
 import aiohttp
-from aioresponses import aioresponses
 import pytest
+from aioresponses import aioresponses
 from yarl import URL
 
 from custom_components.bwwb_water.client import (
@@ -37,7 +38,11 @@ async def test_login_posts_token_and_credentials(session):
         html(m, "post", f"{BASE}/Home/Login", SUMMARY)
         await CAWClient(session, "TESTUSER", "pw").login()
         sent = m.requests[("POST", URL(f"{BASE}/Home/Login"))][0].kwargs["data"]
-    assert sent == {"__RequestVerificationToken": "TOKEN123", "UserName": "TESTUSER", "Password": "pw"}
+    assert sent == {
+        "__RequestVerificationToken": "TOKEN123",
+        "UserName": "TESTUSER",
+        "Password": "pw",
+    }
 
 
 async def test_login_rejected(session):
@@ -86,7 +91,12 @@ async def test_expired_session_relogs_once(session):
         html(m, "get", f"{BASE}/Billing/SingleAccountStatementHistory", LOGIN)  # expired
         html(m, "get", BASE, LOGIN)
         html(m, "post", f"{BASE}/Home/Login", SUMMARY)
-        html(m, "get", f"{BASE}/Billing/SingleAccountStatementHistory", "<a href='/alabama/Home/Logout'>x</a>")
+        html(
+            m,
+            "get",
+            f"{BASE}/Billing/SingleAccountStatementHistory",
+            "<a href='/alabama/Home/Logout'>x</a>",
+        )
         assert "Logout" in await client.get_statement_history_html()
 
 

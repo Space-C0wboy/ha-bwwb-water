@@ -3,13 +3,14 @@
 No I/O here: every function takes the page body and returns dataclasses, so
 each one can be tested against fixture files.
 """
+
 from __future__ import annotations
 
+import logging
+import re
 from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from io import BytesIO
-import logging
-import re
 
 from bs4 import BeautifulSoup, Tag
 from pypdf import PdfReader
@@ -91,7 +92,11 @@ def parse_statement_list(html: str) -> list[StatementRef]:
         cells = _cells(row)
         if len(cells) < 3:
             continue  # DataTables "No data available" placeholder row
-        refs.append(StatementRef(issue_date=_date(cells[0]), amount=_money(cells[1]), due_date=_date(cells[2])))
+        refs.append(
+            StatementRef(
+                issue_date=_date(cells[0]), amount=_money(cells[1]), due_date=_date(cells[2])
+            )
+        )
     return refs
 
 
@@ -234,7 +239,9 @@ def _line_items(text: str, heading: str, total: str) -> tuple[LineItem, ...]:
 
 def parse_bill_text(text: str) -> Bill:
     invoice = _search(rf"INVOICE DATE:\s*({_LONG_DATE})", text, "invoice date")
-    period = _search(rf"SERVICE PERIOD:\s*({_LONG_DATE})\s*-\s*({_LONG_DATE})", text, "service period")
+    period = _search(
+        rf"SERVICE PERIOD:\s*({_LONG_DATE})\s*-\s*({_LONG_DATE})", text, "service period"
+    )
     due = _search(rf"TOTAL AMOUNT DUE by\s*({_LONG_DATE})\s*({_MONEY})", text, "amount due")
     meter = _search(
         rf"CONS\s+(\S+)\s+\S+\s+({_NUMBER})\s+({_SHORT_DATE})\s+({_NUMBER})\s+({_SHORT_DATE})\s+({_NUMBER})",
