@@ -29,9 +29,9 @@ import datetime
 import json
 import logging
 import re
-from aiohttp import web
 
 import jwt
+from aiohttp import web
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("utility-auth-service")
@@ -40,6 +40,7 @@ SC_CACHE: dict = {}
 
 
 # ─── SOUTHERN COMPANY ────────────────────────────────────────────────────────
+
 
 async def get_sc_token_playwright(username: str, password: str) -> dict:
     """Playwright auth for Southern Company (Incapsula WAF bypass)."""
@@ -52,10 +53,15 @@ async def get_sc_token_playwright(username: str, password: str) -> dict:
 
     log.info(f"SC: launching Playwright for {username}...")
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, args=[
-            "--no-sandbox", "--disable-dev-shm-usage",
-            "--disable-blink-features=AutomationControlled", "--disable-extensions",
-        ])
+        browser = await p.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-extensions",
+            ],
+        )
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             viewport={"width": 1920, "height": 1080},
@@ -66,7 +72,11 @@ async def get_sc_token_playwright(username: str, password: str) -> dict:
             Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
             window.chrome = {runtime: {}};
         """)
-        await page.goto("https://webauth.southernco.com/account/login", timeout=30000, wait_until="domcontentloaded")
+        await page.goto(
+            "https://webauth.southernco.com/account/login",
+            timeout=30000,
+            wait_until="domcontentloaded",
+        )
         await asyncio.sleep(3)
         await page.wait_for_load_state("networkidle", timeout=20000)
 
@@ -113,6 +123,7 @@ async def get_sc_token_playwright(username: str, password: str) -> dict:
 
 # ─── HANDLERS ────────────────────────────────────────────────────────────────
 
+
 async def handle_sc_auth(request: web.Request) -> web.Response:
     try:
         body = await request.json()
@@ -131,11 +142,14 @@ async def handle_sc_auth(request: web.Request) -> web.Response:
 
 
 async def handle_health(request: web.Request) -> web.Response:
-    return web.json_response({
-        "status": "ok",
-        "service": "utility-auth-service",
-        "endpoints": ["/sc/auth", "/auth", "/health"],
-    })
+    return web.json_response(
+        {
+            "status": "ok",
+            "service": "utility-auth-service",
+            "endpoints": ["/sc/auth", "/auth", "/health"],
+        }
+    )
+
 
 # Legacy endpoint
 async def handle_auth_legacy(request: web.Request) -> web.Response:

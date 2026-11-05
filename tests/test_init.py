@@ -1,4 +1,5 @@
 """Tests for setup, unload and the v1 -> v2 migration."""
+
 from unittest.mock import patch
 
 import pytest
@@ -17,7 +18,10 @@ def auto_enable_custom_integrations(recorder_mock, enable_custom_integrations):
 def patched():
     with (
         patch("custom_components.bwwb_water.CAWClient", FakeClient),
-        patch("custom_components.bwwb_water.coordinator.parse_bill_pdf", side_effect=fake_parse_bill_pdf),
+        patch(
+            "custom_components.bwwb_water.coordinator.parse_bill_pdf",
+            side_effect=fake_parse_bill_pdf,
+        ),
         patch("custom_components.bwwb_water.coordinator.async_import_bill_statistics"),
     ):
         yield
@@ -28,7 +32,11 @@ async def test_v1_entry_migrates_and_adopts_account_number(hass, patched):
         domain="bwwb_water",
         version=1,
         unique_id="testuser",
-        data={"username": "TESTUSER", "password": "pw", "auth_service_url": "http://192.168.1.5:18792/bwwb/data"},
+        data={
+            "username": "TESTUSER",
+            "password": "pw",
+            "auth_service_url": "http://192.168.1.5:18792/bwwb/data",
+        },
     )
     entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(entry.entry_id)

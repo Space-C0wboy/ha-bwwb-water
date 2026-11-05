@@ -1,4 +1,5 @@
 """Tests for the config flow."""
+
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -6,7 +7,11 @@ from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.bwwb_water.client import CAWAuthError, CAWConnectionError, CAWPortalChangedError
+from custom_components.bwwb_water.client import (
+    CAWAuthError,
+    CAWConnectionError,
+    CAWPortalChangedError,
+)
 from custom_components.bwwb_water.config_flow import validate_credentials
 
 VALIDATE = "custom_components.bwwb_water.config_flow.validate_credentials"
@@ -26,7 +31,9 @@ def no_setup():
 
 
 async def test_user_flow_creates_entry(hass):
-    result = await hass.config_entries.flow.async_init("bwwb_water", context={"source": config_entries.SOURCE_USER})
+    result = await hass.config_entries.flow.async_init(
+        "bwwb_water", context={"source": config_entries.SOURCE_USER}
+    )
     assert result["type"] is FlowResultType.FORM
     with patch(VALIDATE, return_value="999900001111"):
         result = await hass.config_entries.flow.async_configure(result["flow_id"], CREDS)
@@ -46,7 +53,9 @@ async def test_user_flow_creates_entry(hass):
     ],
 )
 async def test_user_flow_errors(hass, error, code):
-    result = await hass.config_entries.flow.async_init("bwwb_water", context={"source": config_entries.SOURCE_USER})
+    result = await hass.config_entries.flow.async_init(
+        "bwwb_water", context={"source": config_entries.SOURCE_USER}
+    )
     with patch(VALIDATE, side_effect=error):
         result = await hass.config_entries.flow.async_configure(result["flow_id"], CREDS)
     assert result["type"] is FlowResultType.FORM
@@ -54,8 +63,12 @@ async def test_user_flow_errors(hass, error, code):
 
 
 async def test_duplicate_account_aborts(hass):
-    MockConfigEntry(domain="bwwb_water", version=2, unique_id="999900001111", data=CREDS).add_to_hass(hass)
-    result = await hass.config_entries.flow.async_init("bwwb_water", context={"source": config_entries.SOURCE_USER})
+    MockConfigEntry(
+        domain="bwwb_water", version=2, unique_id="999900001111", data=CREDS
+    ).add_to_hass(hass)
+    result = await hass.config_entries.flow.async_init(
+        "bwwb_water", context={"source": config_entries.SOURCE_USER}
+    )
     with patch(VALIDATE, return_value="999900001111"):
         result = await hass.config_entries.flow.async_configure(result["flow_id"], CREDS)
     assert result["type"] is FlowResultType.ABORT
@@ -68,7 +81,9 @@ async def test_reauth_updates_password(hass):
     result = await entry.start_reauth_flow(hass)
     assert result["step_id"] == "reauth_confirm"
     with patch(VALIDATE, return_value="999900001111"):
-        result = await hass.config_entries.flow.async_configure(result["flow_id"], {"password": "new"})
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {"password": "new"}
+        )
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reauth_successful"
     assert entry.data["password"] == "new"
@@ -116,6 +131,9 @@ async def test_validate_credentials_releases_session(hass):
         sessions.append(session)
         return MagicMock(get_summary_html=AsyncMock(side_effect=CAWAuthError()))
 
-    with patch("custom_components.bwwb_water.config_flow.CAWClient", side_effect=client), pytest.raises(CAWAuthError):
+    with (
+        patch("custom_components.bwwb_water.config_flow.CAWClient", side_effect=client),
+        pytest.raises(CAWAuthError),
+    ):
         await validate_credentials(hass, "TESTUSER", "pw")
     assert sessions[0].closed

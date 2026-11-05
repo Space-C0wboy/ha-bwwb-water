@@ -1,4 +1,5 @@
 """Shared test data."""
+
 from datetime import date, timedelta
 
 from custom_components.bwwb_water.client import CAWConnectionError
@@ -7,7 +8,9 @@ from custom_components.bwwb_water.parsers import Bill, LineItem
 from .conftest import load_fixture
 
 
-def make_bill(issue: date, present: float, cons: float, water: float = 43.97, sewer: float = 56.02) -> Bill:
+def make_bill(
+    issue: date, present: float, cons: float, water: float = 43.97, sewer: float = 56.02
+) -> Bill:
     return Bill(
         invoice_date=issue,
         due_date=issue + timedelta(days=14),
@@ -37,7 +40,9 @@ BILLS = {
 class FakeClient:
     """Stands in for CAWClient: serves fixture HTML and marker 'PDFs'."""
 
-    def __init__(self, *args, fail_pdfs: set[date] | None = None, summary_error: Exception | None = None):
+    def __init__(
+        self, *args, fail_pdfs: set[date] | None = None, summary_error: Exception | None = None
+    ):
         self.fail_pdfs = fail_pdfs or set()
         self.summary_error = summary_error
         self.pdf_calls: list[date] = []

@@ -1,4 +1,5 @@
 """Tests for the pure portal parsers."""
+
 from datetime import date
 
 import pytest
@@ -134,9 +135,17 @@ def test_parse_bill_caw():
 
 def test_parse_bill_bwwb_branded():
     bill = parse_bill_text(load_fixture("bill_bwwb.txt"))
-    assert (bill.invoice_date, bill.due_date, bill.total_due) == (date(2025, 10, 6), date(2025, 10, 20), 26.20)
+    assert (bill.invoice_date, bill.due_date, bill.total_due) == (
+        date(2025, 10, 6),
+        date(2025, 10, 20),
+        26.20,
+    )
     assert (bill.previous_read, bill.previous_read_date) == (878.0, date(2025, 9, 26))
-    assert (bill.present_read, bill.present_read_date, bill.consumption) == (879.0, date(2025, 10, 2), 1.0)
+    assert (bill.present_read, bill.present_read_date, bill.consumption) == (
+        879.0,
+        date(2025, 10, 2),
+        1.0,
+    )
     assert (bill.water_charges, bill.sewer_charges) == (9.90, 16.30)
     assert bill.water_line_items == (
         LineItem("Base Service Charge", 6.56),

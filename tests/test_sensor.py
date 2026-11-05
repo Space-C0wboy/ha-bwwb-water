@@ -1,5 +1,5 @@
 """Tests for the sensor platform."""
-from dataclasses import replace
+
 from datetime import date
 from unittest.mock import patch
 
@@ -25,7 +25,10 @@ async def entry(hass):
     entry.add_to_hass(hass)
     with (
         patch("custom_components.bwwb_water.CAWClient", FakeClient),
-        patch("custom_components.bwwb_water.coordinator.parse_bill_pdf", side_effect=fake_parse_bill_pdf),
+        patch(
+            "custom_components.bwwb_water.coordinator.parse_bill_pdf",
+            side_effect=fake_parse_bill_pdf,
+        ),
         patch("custom_components.bwwb_water.coordinator.async_import_bill_statistics"),
     ):
         assert await hass.config_entries.async_setup(entry.entry_id)
@@ -34,7 +37,9 @@ async def entry(hass):
 
 
 def state(hass, entry, key):
-    entity_id = er.async_get(hass).async_get_entity_id("sensor", "bwwb_water", f"{entry.entry_id}_{key}")
+    entity_id = er.async_get(hass).async_get_entity_id(
+        "sensor", "bwwb_water", f"{entry.entry_id}_{key}"
+    )
     assert entity_id, key
     return hass.states.get(entity_id)
 
@@ -70,7 +75,10 @@ async def test_sensor_attributes(hass, entry):
     assert state(hass, entry, "water_charges").attributes["line_items"] == [
         {"description": "Base Service Charge", "amount": 28.49}
     ]
-    assert state(hass, entry, "current_balance").attributes["payment_status"] == "Auto Draft Compl 09/22/2026"
+    assert (
+        state(hass, entry, "current_balance").attributes["payment_status"]
+        == "Auto Draft Compl 09/22/2026"
+    )
 
 
 def data_with(balance: float, bills=None) -> CAWData:

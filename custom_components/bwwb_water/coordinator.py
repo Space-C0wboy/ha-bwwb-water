@@ -1,8 +1,9 @@
 """DataUpdateCoordinator for Central Alabama Water."""
+
 from __future__ import annotations
 
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -69,7 +70,9 @@ class CAWCoordinator(DataUpdateCoordinator[CAWData]):
         try:
             return {key: bill_from_dict(value) for key, value in stored.get("bills", {}).items()}
         except (AttributeError, KeyError, TypeError, ValueError) as err:
-            _LOGGER.warning("Discarding unreadable bill cache, statements will be re-downloaded: %s", err)
+            _LOGGER.warning(
+                "Discarding unreadable bill cache, statements will be re-downloaded: %s", err
+            )
             return {}
 
     async def _async_update_data(self) -> CAWData:
@@ -106,7 +109,9 @@ class CAWCoordinator(DataUpdateCoordinator[CAWData]):
 
         bills = sorted(self._bills.values(), key=lambda b: b.present_read_date)
         if added:
-            await self._store.async_save({"bills": {k: bill_to_dict(b) for k, b in self._bills.items()}})
+            await self._store.async_save(
+                {"bills": {k: bill_to_dict(b) for k, b in self._bills.items()}}
+            )
         if bills and (added or not self._statistics_imported):
             async_import_bill_statistics(self.hass, bills)
             self._statistics_imported = True

@@ -1,4 +1,5 @@
 """Constants for the Central Alabama Water (formerly BWWB) integration."""
+
 from datetime import timedelta
 
 DOMAIN = "bwwb_water"
